@@ -1,7 +1,7 @@
 # Roblox Portfolio
 Visit the portfolio here:
 
-<https://ujji-k06.github.io/Roblox-Portfolio/>
+<https://ujji-k06.github.io/RobloxPortfolio/>
 
 ## Use this as your own portfolio template
 
