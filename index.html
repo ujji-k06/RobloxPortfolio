@@ -1,872 +1,2001 @@
 <!doctype html>
 <html lang="en" data-theme="dark">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="dark light">
-  <meta name="description" content="ujji_k06 — a Roblox Luau developer building the systems behind good games: gameplay, combat, movement, data, economy, UI, networking, and reusable frameworks.">
-  <title>ujji_k06 — Roblox Luau Developer</title>
-  <style>
-    :root {
-      --bg:#08090f;
-      --bg-2:#0d0f1a;
-      --surface:#12141f;
-      --surface-2:#171a27;
-      --text:#e7ebf5;
-      --muted:#a1a8bc;
-      --faint:#687089;
-      --accent:#ff6a3d;
-      --accent-2:#ffb37a;
-      --accent-3:#7aa2ff;
-      --line:rgba(255,255,255,.08);
-      --line-2:rgba(255,255,255,.14);
-      --glow: color-mix(in srgb, var(--accent) 40%, transparent);
-      --shadow: 0 30px 80px rgba(0,0,0,.5);
-      --r:16px;
-      --r-sm:11px;
-      --font: Aptos, "Segoe UI Variable", "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --display: "Segoe UI Variable Display", Aptos, "Inter", ui-sans-serif, system-ui, sans-serif;
-      --mono: "Cascadia Code", "JetBrains Mono", Consolas, "SFMono-Regular", Menlo, monospace;
-      --ease: cubic-bezier(.22,1,.36,1);
-    }
-
-    html[data-theme="light"] {
-      --bg:#eef0f5;
-      --bg-2:#e6e9f1;
-      --surface:#ffffff;
-      --surface-2:#f4f6fb;
-      --text:#0e1020;
-      --muted:#4c5470;
-      --faint:#9aa1ba;
-      --accent:#2f52ff;
-      --accent-2:#6f86ff;
-      --accent-3:#ff6a3d;
-      --line:rgba(16,20,40,.1);
-      --line-2:rgba(16,20,40,.16);
-      --shadow: 0 26px 70px rgba(20,28,60,.16);
-    }
-
-    * { box-sizing: border-box; }
-
-    html {
-      scroll-behavior: smooth;
-      background: var(--bg);
-      overflow-x: hidden;
-      -webkit-text-size-adjust: 100%;
-    }
-
-    body {
-      margin: 0;
-      min-width: 320px;
-      overflow-x: hidden;
-      color: var(--text);
-      background:
-        radial-gradient(120% 90% at 78% -10%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 45%),
-        radial-gradient(90% 80% at 6% 28%, color-mix(in srgb, var(--accent-3) 14%, transparent), transparent 52%),
-        linear-gradient(180deg, var(--bg), var(--bg-2) 48%, var(--bg));
-      background-attachment: fixed;
-      font-family: var(--font);
-      line-height: 1.55;
-      text-rendering: geometricPrecision;
-      -webkit-font-smoothing: antialiased;
-      font-synthesis-weight: none;
-      transition: background-color .4s var(--ease), color .4s var(--ease);
-    }
-
-    /* ---------------- ambient background layers ---------------- */
-    .bg-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
-
-    .grid-layer {
-      z-index: 0;
-      background-image:
-        linear-gradient(var(--line) 1px, transparent 1px),
-        linear-gradient(90deg, var(--line) 1px, transparent 1px);
-      background-size: 74px 74px;
-      -webkit-mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 75%);
-      mask-image: radial-gradient(120% 90% at 50% 0%, #000 30%, transparent 75%);
-      opacity: .6;
-    }
-
-    .aurora { z-index: 0; overflow: hidden; }
-    .aurora::before,
-    .aurora::after {
-      content: "";
-      position: absolute;
-      width: 60vw; height: 60vw;
-      border-radius: 50%;
-      filter: blur(90px);
-      opacity: .5;
-      will-change: transform;
-    }
-    .aurora::before {
-      top: -18vw; right: -10vw;
-      background: radial-gradient(circle, color-mix(in srgb, var(--accent) 60%, transparent), transparent 62%);
-      animation: drift1 26s var(--ease) infinite alternate;
-    }
-    .aurora::after {
-      top: 34vh; left: -14vw;
-      background: radial-gradient(circle, color-mix(in srgb, var(--accent-3) 52%, transparent), transparent 62%);
-      animation: drift2 32s var(--ease) infinite alternate;
-    }
-    @keyframes drift1 { to { transform: translate3d(-8vw, 12vh, 0) scale(1.15); } }
-    @keyframes drift2 { to { transform: translate3d(10vw, -8vh, 0) scale(1.2); } }
-
-    /* animated lines of code */
-    .codefield {
-      z-index: 0;
-      display: flex;
-      justify-content: space-between;
-      gap: clamp(1rem, 3vw, 3rem);
-      padding: 0 clamp(.75rem, 2vw, 2rem);
-      opacity: .72;
-      mix-blend-mode: screen;
-      transform: translate3d(0, var(--code-parallax, 0px), 0);
-      will-change: transform;
-      -webkit-mask-image: linear-gradient(180deg, transparent, #000 7%, #000 90%, transparent);
-      mask-image: linear-gradient(180deg, transparent, #000 7%, #000 90%, transparent);
-    }
-    html[data-theme="light"] .codefield { opacity: .28; mix-blend-mode: multiply; }
-    .code-col {
-      flex: 1 1 0;
-      min-width: 0;
-      margin: 0;
-      font-family: var(--mono);
-      font-size: 12.5px;
-      line-height: 2.05;
-      white-space: pre;
-      overflow: hidden;
-      color: color-mix(in srgb, var(--text) 34%, transparent);
-      text-shadow: 0 0 18px color-mix(in srgb, var(--accent-3) 22%, transparent);
-      animation: codefall linear infinite;
-      will-change: transform;
-      transform: translateY(-50%);
-    }
-    .code-col:nth-child(2) { animation-duration: 58s; opacity: .72; }
-    .code-col:nth-child(1) { animation-duration: 74s; }
-    .code-col:nth-child(3) { animation-duration: 66s; opacity: .8; }
-    .code-col:nth-child(4) { animation-duration: 82s; opacity: .6; }
-    .code-col .kw { color: color-mix(in srgb, var(--accent) 66%, transparent); }
-    .code-col .fn { color: color-mix(in srgb, var(--accent-3) 70%, transparent); }
-    @keyframes codefall { from { transform: translateY(-50%); } to { transform: translateY(0); } }
-    @media (max-width: 880px) { .code-col:nth-child(3), .code-col:nth-child(4) { display: none; } }
-    @media (max-width: 560px) { .code-col:nth-child(1) { display: none; } }
-
-    a { color: inherit; text-decoration: none; }
-    img { display: block; max-width: 100%; height: auto; }
-    button { font: inherit; }
-    button, a { -webkit-tap-highlight-color: transparent; }
-
-    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
-    ::selection { background: var(--accent); color: #fff; }
-
-    /* ---------------- header ---------------- */
-    .site-header {
-      position: fixed;
-      inset: 0 0 auto 0;
-      z-index: 30;
-      border-bottom: 1px solid transparent;
-      transition: background .3s var(--ease), border-color .3s var(--ease), backdrop-filter .3s;
-    }
-    .site-header.scrolled {
-      background: color-mix(in srgb, var(--bg) 72%, transparent);
-      backdrop-filter: blur(20px) saturate(1.4);
-      border-bottom-color: var(--line);
-    }
-    .nav {
-      width: min(1200px, calc(100% - 2.5rem));
-      margin: 0 auto;
-      min-height: 74px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-    }
-    .brand { display: inline-flex; align-items: center; gap: .7rem; font-weight: 750; letter-spacing: -.01em; font-size: 1rem; }
-    .brand-mark {
-      width: 2.35rem; height: 2.35rem;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--line-2);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent), 0 6px 20px rgba(0,0,0,.4);
-    }
-    .nav-links { display: flex; align-items: center; gap: clamp(1.6rem, 3vw, 3.4rem); }
-    .nav-links a {
-      padding: .6rem .08rem; border-radius: var(--r-sm);
-      color: var(--text); font-family: var(--display); font-size: clamp(1rem, 1.35vw, 1.15rem); font-weight: 520; letter-spacing: -.018em;
-      transition: color .2s, text-shadow .2s, transform .2s var(--ease);
-    }
-    .nav-links a:hover { color: #fff; text-shadow: 0 0 18px color-mix(in srgb, var(--accent-3) 28%, transparent); transform: translateY(-1px); }
-    .nav-right { display: flex; align-items: center; gap: .6rem; }
-    .theme-toggle {
-      display: inline-flex; align-items: center; gap: .45rem;
-      padding: .5rem .75rem; border-radius: var(--r-sm);
-      border: 1px solid var(--line); background: color-mix(in srgb, var(--surface) 60%, transparent);
-      color: var(--text); cursor: pointer;
-      font-family: var(--mono); font-size: .74rem; font-variant-numeric: tabular-nums;
-      transition: border-color .2s, transform .2s var(--ease);
-    }
-    .theme-toggle:hover { border-color: var(--line-2); transform: translateY(-1px); }
-    .nav-cta {
-      padding: .58rem 1rem; border-radius: var(--r-sm);
-      background: var(--text); color: var(--bg); font-weight: 650; font-size: .9rem;
-      transition: transform .2s var(--ease), box-shadow .2s;
-    }
-    .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(0,0,0,.35); }
-
-    /* ---------------- layout ---------------- */
-    main { position: relative; z-index: 1; }
-    .wrap { width: min(1200px, calc(100% - 2.5rem)); margin: 0 auto; }
-    .section { padding: clamp(4.5rem, 9vw, 8.5rem) 0; }
-
-    .eyebrow {
-      display: inline-flex; align-items: center; gap: .5rem;
-      font-family: var(--mono); font-size: .74rem; letter-spacing: .12em; text-transform: uppercase;
-      color: var(--muted); margin: 0 0 1.1rem;
-    }
-    .eyebrow::before { content: ""; width: 1.6rem; height: 1px; background: var(--accent); }
-
-    h1, h2, h3 { margin: 0; font-family: var(--display); letter-spacing: -.035em; line-height: 1; font-weight: 650; }
-    p { margin: 0; }
-    .grad { background: linear-gradient(100deg, var(--accent), var(--accent-2) 60%, var(--accent-3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-
-    /* ---------------- hero ---------------- */
-    .hero {
-      position: relative;
-      min-height: 100svh;
-      display: grid;
-      align-content: center;
-      padding: 8.5rem 0 4.5rem;
-    }
-    .badge {
-      display: inline-flex; align-items: center; gap: .6rem;
-      padding: .5rem .85rem; border-radius: 999px;
-      border: 1px solid var(--line-2); background: color-mix(in srgb, var(--surface) 55%, transparent);
-      backdrop-filter: blur(8px);
-      font-size: .82rem; color: var(--muted); margin-bottom: 1.8rem; width: fit-content;
-    }
-    .badge .dot { width: .5rem; height: .5rem; border-radius: 50%; background: #35d07f; box-shadow: 0 0 0 0 #35d07f; animation: ping 2.6s var(--ease) infinite; }
-    .badge b { color: var(--text); font-weight: 650; }
-    @keyframes ping { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, #35d07f 70%, transparent); } 70%,100% { box-shadow: 0 0 0 7px transparent; } }
-
-    .hero h1 {
-      max-width: 16ch;
-      font-size: clamp(2.9rem, 8vw, 6.6rem);
-      line-height: .96;
-      margin-bottom: 1.6rem;
-      font-weight: 640;
-      text-wrap: balance;
-    }
-    .hero-lead { max-width: 40rem; color: var(--muted); font-size: clamp(1.04rem, 1.65vw, 1.24rem); line-height: 1.62; font-weight: 400; }
-    .hero-actions { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 2.2rem; }
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
-      min-height: 3rem; padding: .8rem 1.35rem; border-radius: 999px;
-      border: 1px solid var(--line-2); background: color-mix(in srgb, var(--surface) 60%, transparent);
-      color: var(--text); font-weight: 540; cursor: pointer;
-      transition: transform .2s var(--ease), border-color .2s, background .2s, box-shadow .2s;
-    }
-    .btn .arrow { transition: transform .2s var(--ease); }
-    .btn:hover { transform: translateY(-2px); border-color: var(--line-2); }
-    .btn:hover .arrow { transform: translateX(3px); }
-    .btn.primary {
-      border-color: transparent;
-      background: linear-gradient(120deg, var(--accent), color-mix(in srgb, var(--accent) 60%, var(--accent-2)));
-      color: #fff;
-      box-shadow: 0 12px 30px -8px var(--glow);
-    }
-    .btn.primary:hover { box-shadow: 0 18px 40px -8px var(--glow); }
-
-    .hero-metrics {
-      display: flex; flex-wrap: wrap; gap: 2.4rem;
-      margin-top: 3.4rem; padding-top: 2rem; border-top: 1px solid var(--line);
-    }
-    .metric strong { display: block; font-family: var(--display); font-size: clamp(1.6rem, 3vw, 2.3rem); font-weight: 620; letter-spacing: -.035em; }
-    .metric span { font-family: var(--mono); font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--faint); }
-
-    /* ---------------- marquee ---------------- */
-    .marquee {
-      position: relative;
-      border-block: 1px solid var(--line);
-      overflow: hidden;
-      background:
-        linear-gradient(90deg, transparent, color-mix(in srgb, var(--surface) 56%, transparent) 14%, color-mix(in srgb, var(--surface) 56%, transparent) 86%, transparent),
-        color-mix(in srgb, var(--surface) 34%, transparent);
-      -webkit-mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-      mask-image: linear-gradient(90deg, transparent, #000 7%, #000 93%, transparent);
-    }
-    .marquee-track {
-      display: flex;
-      width: max-content;
-      transform: translate3d(-50%, 0, 0);
-      will-change: transform;
-    }
-    .marquee-track span {
-      display: inline-flex; align-items: center;
-      padding: 1.15rem 0; font-weight: 610; font-size: clamp(.95rem, 1.7vw, 1.2rem);
-      text-transform: uppercase; white-space: nowrap; color: var(--muted); letter-spacing: .055em;
-    }
-    .marquee-track i { font-style: normal; color: var(--accent); padding: 0 1.5rem; font-weight: 700; }
-    .marquee-track em { font-style: normal; padding-left: 2.6rem; color: var(--text); }
-    @keyframes marquee-ltr { from { transform: translate3d(-50%,0,0); } to { transform: translate3d(0,0,0); } }
-
-    /* ---------------- section head ---------------- */
-    .section-head { display: grid; grid-template-columns: minmax(0,1fr) minmax(15rem, 28rem); gap: 2rem 3rem; align-items: end; margin-bottom: 2.6rem; }
-    .section-head h2 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 650; }
-    .section-head p { color: var(--muted); font-size: 1rem; }
-
-    /* ---------------- work ---------------- */
-    .work-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1.1rem; }
-    .card {
-      position: relative; display: flex; flex-direction: column; overflow: hidden;
-      border: 1px solid var(--line); border-radius: var(--r);
-      background: color-mix(in srgb, var(--surface) 70%, transparent);
-      backdrop-filter: blur(6px);
-      box-shadow: var(--shadow);
-      transition: transform .3s var(--ease), border-color .3s, background .3s;
-    }
-    .card.featured { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0,1.1fr) minmax(19rem,.9fr); }
-    .card:hover { transform: translateY(-6px); border-color: var(--line-2); background: color-mix(in srgb, var(--surface) 84%, transparent); }
-    .card-media { position: relative; overflow: hidden; background: #05060c; min-height: 13rem; }
-    .card.featured .card-media { min-height: 24rem; }
-    .card-media img { width: 100%; height: 100%; object-fit: cover; aspect-ratio: 16/9; transform: scale(1.02); transition: transform .5s var(--ease), filter .5s; }
-    .card:hover .card-media img { transform: scale(1.07); filter: saturate(1.12); }
-    .card-media::after {
-      content: ""; position: absolute; inset: 0; pointer-events: none;
-      background: linear-gradient(180deg, transparent 55%, color-mix(in srgb, var(--surface) 92%, transparent));
-      opacity: .0; transition: opacity .4s;
-    }
-    .card.featured .card-media::after { background: linear-gradient(90deg, transparent 55%, color-mix(in srgb, var(--surface) 60%, transparent)); }
-    .card-body { display: flex; flex-direction: column; gap: .9rem; padding: clamp(1.2rem, 2.2vw, 1.9rem); flex: 1; min-width: 0; }
-    .role { font-family: var(--mono); font-size: .74rem; letter-spacing: .05em; text-transform: uppercase; color: var(--accent); }
-    .card h3 {
-      font-size: clamp(1.35rem, 2.4vw, 2.1rem); font-weight: 620; letter-spacing: -.025em; line-height: 1.05;
-      overflow-wrap: anywhere; word-break: break-word; hyphens: auto;
-    }
-    .card.featured h3 { font-size: clamp(1.8rem, 3vw, 2.8rem); }
-    .card p { color: var(--muted); font-size: .96rem; line-height: 1.55; }
-    .tags { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: auto; padding-top: .3rem; }
-    .tag { font-family: var(--mono); font-size: .72rem; padding: .3rem .6rem; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
-    .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-top: 1rem; margin-top: .3rem; border-top: 1px solid var(--line); }
-    .card-foot .meta { font-family: var(--mono); font-size: .74rem; color: var(--faint); font-variant-numeric: tabular-nums; }
-    .card-foot .link { font-weight: 600; font-size: .9rem; display: inline-flex; align-items: center; gap: .4rem; }
-    .card-foot .link .arrow { transition: transform .2s var(--ease); }
-    .card:hover .card-foot .link { color: var(--accent); }
-    .card:hover .card-foot .link .arrow { transform: translateX(3px); }
-    .card-link { position: absolute; inset: 0; z-index: 2; }
-    .card-foot .link { position: relative; z-index: 3; }
-
-    /* ---------------- clips ---------------- */
-    .clip-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1.1rem; }
-    .clip-card {
-      position: relative; display: flex; flex-direction: column; overflow: hidden;
-      border: 1px solid var(--line); border-radius: var(--r);
-      background: color-mix(in srgb, var(--surface) 70%, transparent);
-      backdrop-filter: blur(6px);
-      box-shadow: var(--shadow);
-      transition: transform .3s var(--ease), border-color .3s, background .3s;
-    }
-    .clip-card:hover { transform: translateY(-6px); border-color: var(--line-2); background: color-mix(in srgb, var(--surface) 84%, transparent); }
-    .clip-media { position: relative; overflow: hidden; background: #05060c; }
-    .clip-media video {
-      display: block;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      object-fit: cover;
-      background: #05060c;
-    }
-    .clip-body { padding: clamp(1rem, 1.8vw, 1.35rem); }
-    .clip-card h3 {
-      font-size: clamp(1.12rem, 1.8vw, 1.55rem); font-weight: 620; letter-spacing: -.02em; line-height: 1.1;
-      overflow-wrap: anywhere; word-break: break-word; hyphens: auto;
-    }
-
-    /* ---------------- about ---------------- */
-    .about-grid { display: grid; grid-template-columns: minmax(0,.72fr) minmax(0,1.28fr); gap: clamp(2rem, 6vw, 5rem); }
-    .about-aside h2 { font-size: clamp(2rem, 4vw, 3.4rem); font-weight: 560; letter-spacing: -.025em; }
-    .about-copy { display: grid; gap: 1.2rem; }
-    .about-copy p { color: var(--muted); font-size: clamp(1.05rem, 1.7vw, 1.28rem); line-height: 1.6; }
-    .about-copy strong { color: var(--text); font-weight: 650; }
-
-    /* ---------------- specialties (bento) ---------------- */
-    .bento { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: .9rem; }
-    .cell {
-      position: relative; min-height: 9.5rem; padding: 1.3rem;
-      border: 1px solid var(--line); border-radius: var(--r);
-      background: color-mix(in srgb, var(--surface) 60%, transparent);
-      display: flex; flex-direction: column; justify-content: space-between; gap: 1rem;
-      overflow: hidden; transition: transform .25s var(--ease), border-color .25s, background .25s;
-    }
-    .cell:hover { transform: translateY(-4px); border-color: var(--line-2); background: color-mix(in srgb, var(--surface) 82%, transparent); }
-    .cell .num { font-family: var(--mono); font-size: .74rem; color: var(--accent); }
-    .cell strong { font-size: 1.12rem; font-weight: 620; letter-spacing: -.01em; }
-    .cell small { display: block; margin-top: .35rem; color: var(--faint); font-size: .82rem; font-weight: 400; }
-    .cell.wide { grid-column: span 2; }
-    .cell::after { content: ""; position: absolute; right: -30%; top: -30%; width: 60%; height: 120%; background: radial-gradient(circle, color-mix(in srgb, var(--accent) 20%, transparent), transparent 70%); opacity: 0; transition: opacity .3s; }
-    .cell:hover::after { opacity: 1; }
-
-    /* ---------------- contact ---------------- */
-    .contact-panel {
-      position: relative; overflow: hidden;
-      border: 1px solid var(--line-2); border-radius: calc(var(--r) + 6px);
-      background:
-        radial-gradient(90% 140% at 100% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 55%),
-        color-mix(in srgb, var(--surface) 78%, transparent);
-      padding: clamp(2rem, 5vw, 4rem);
-      text-align: center;
-    }
-    .contact-panel h2 { font-size: clamp(2.2rem, 5.5vw, 4.4rem); font-weight: 650; max-width: 16ch; margin: 0 auto 1rem; }
-    .contact-panel p { max-width: 40ch; margin: 0 auto; color: var(--muted); font-size: 1.05rem; }
-    .contact-actions { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; margin-top: 2.2rem; }
-    .btn.social { flex-direction: column; gap: .1rem; min-width: 12rem; padding: .85rem 1.4rem; align-items: flex-start; text-align: left; font-weight: 540; }
-    .btn.social small { font-family: var(--mono); font-size: .72rem; color: var(--faint); font-weight: 400; }
-    .btn.social b { font-weight: 620; font-size: 1rem; }
-    .btn.roblox-social {
-      border-color: rgba(255,255,255,.72);
-      background: #fff;
-      color: #07090f;
-      box-shadow: 0 16px 36px -18px rgba(255,255,255,.95);
-    }
-    .btn.roblox-social small { color: rgba(7,9,15,.62); }
-    .btn.discord-social {
-      border-color: rgba(88,101,242,.68);
-      background: linear-gradient(135deg, #6f7cff, #5865f2 58%, #4752c4);
-      color: #fff;
-      box-shadow: 0 16px 38px -18px rgba(88,101,242,.95);
-    }
-    .btn.discord-social small { color: rgba(255,255,255,.76); }
-
-    /* ---------------- footer ---------------- */
-    .footer { position: relative; z-index: 1; border-top: 1px solid var(--line); }
-    .footer .wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding: 1.8rem 0; }
-    .footer span { font-family: var(--mono); font-size: .76rem; color: var(--faint); font-variant-numeric: tabular-nums; }
-    .footer a { font-family: var(--mono); font-size: .76rem; color: var(--muted); }
-    .footer a:hover { color: var(--text); }
-
-    /* ---------------- motion: reveal + flow ---------------- */
-    .panel { scroll-margin-top: 6rem; }
-    .reveal {
-      opacity: 0;
-      transform: translate3d(0, 42px, 0) scale(.985);
-      filter: blur(8px);
-      transition: opacity .72s var(--ease), transform .78s var(--ease), filter .78s var(--ease);
-      will-change: opacity, transform, filter;
-    }
-    .section-head.reveal { transform: translate3d(-22px, 34px, 0) scale(.99); }
-    .card.reveal,
-    .cell.reveal,
-    .contact-panel.reveal { transform: perspective(1200px) translate3d(0, 44px, 0) rotateX(5deg) scale(.985); transform-origin: 50% 0; }
-    .about-aside.reveal { transform: translate3d(-28px, 28px, 0) scale(.99); }
-    .about-copy.reveal { transform: translate3d(28px, 28px, 0) scale(.99); }
-    .reveal.in {
-      opacity: 1;
-      transform: translate3d(0, 0, 0) scale(1);
-      filter: blur(0);
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .reveal { transition-duration: .5s; }
-    }
-
-    /* ---------------- responsive ---------------- */
-    @media (max-width: 900px) {
-      .nav-links { display: none; }
-      .section-head, .about-grid, .card.featured { grid-template-columns: 1fr; }
-      .work-grid, .clip-grid { grid-template-columns: 1fr; }
-      .bento { grid-template-columns: repeat(2, minmax(0,1fr)); }
-      .cell.wide { grid-column: span 2; }
-      .card.featured .card-media { min-height: 15rem; }
-    }
-    @media (max-width: 560px) {
-      .wrap, .nav { width: min(100% - 1.5rem, 1200px); }
-      .hero-metrics { gap: 1.4rem; }
-      .bento { grid-template-columns: 1fr; }
-      .cell.wide { grid-column: span 1; }
-      .btn.social { min-width: 0; width: 100%; }
-      .hero-actions .btn { flex: 1; }
-    }
-  </style>
-</head>
-<body>
-  <div class="bg-layer grid-layer" aria-hidden="true"></div>
-  <div class="bg-layer aurora" aria-hidden="true"></div>
-  <div class="bg-layer codefield" aria-hidden="true">
-    <pre class="code-col"></pre>
-    <pre class="code-col"></pre>
-    <pre class="code-col"></pre>
-    <pre class="code-col"></pre>
-  </div>
-
-  <header class="site-header" id="header">
-    <nav class="nav" aria-label="Primary">
-      <a class="brand" href="#top" aria-label="ujji_k06 home">
-        <img class="brand-mark" src="profilepic.jpg" alt="ujji_k06 avatar" width="38" height="38">
-        <span>ujji_k06</span>
-      </a>
-      <div class="nav-links">
-        <a href="#work">Work</a>
-        <a href="#clips">Clips</a>
-        <a href="#about">About</a>
-        <a href="#specialties">Specialties</a>
-      </div>
-      <div class="nav-right">
-        <button class="theme-toggle" type="button" aria-label="Switch to Daybreak theme" aria-pressed="false">
-          <span aria-hidden="true">◐</span><span data-theme-label>Nightfall</span>
-        </button>
-        <a class="nav-cta" href="#contact">Contact me</a>
-      </div>
-    </nav>
-  </header>
-
-  <main id="top">
-    <!-- HERO -->
-    <section class="hero wrap" aria-labelledby="hero-title">
-      <div>
-        <span class="badge"><span class="dot" aria-hidden="true"></span> <b>Available</b> for commissions &amp; studio work</span>
-        <h1 id="hero-title">Roblox developer<br> for hire with <span class="grad">5+ years of experience.</span></h1>
-        <p class="hero-lead">Hi! I'm Ujji — a Roblox programmer with 5+ years of coding experience across Luau, Python, C++, HTML, and TypeScript. I've been freelancing on Roblox since 2022, and I'm always happy to help turn a good idea into something playable.</p>
-        <div class="hero-actions">
-          <a class="btn primary" href="#work">See the work <span class="arrow" aria-hidden="true">→</span></a>
-          <a class="btn" href="#contact">Contact me</a>
-        </div>
-        <div class="hero-metrics">
-          <div class="metric"><strong>2022</strong><span>Building on Roblox</span></div>
-          <div class="metric"><strong>Full-stack</strong><span>Luau systems</span></div>
-          <div class="metric"><strong>Frameworks</strong><span>Reusable &amp; readable</span></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- MARQUEE -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span><em>Gameplay</em><i>/</i>Combat<i>/</i>Movement<i>/</i>Data<i>/</i>Economy<i>/</i>UI<i>/</i>Networking<i>/</i>Anti-exploit<i>/</i>Luau&nbsp;OOP<i>/</i>Frameworks<i>/</i></span>
-        <span><em>Gameplay</em><i>/</i>Combat<i>/</i>Movement<i>/</i>Data<i>/</i>Economy<i>/</i>UI<i>/</i>Networking<i>/</i>Anti-exploit<i>/</i>Luau&nbsp;OOP<i>/</i>Frameworks<i>/</i></span>
-      </div>
-    </div>
-
-    <!-- WORK -->
-    <section class="section wrap panel" id="work" aria-labelledby="work-title">
-      <div class="section-head reveal">
-        <div>
-          <p class="eyebrow">Selected work</p>
-          <h2 id="work-title">Roblox projects you might want to check out.</h2>
-        </div>
-        <p>Live Roblox projects, mostly systems demos and reusable frameworks. Some are experiments rather than full games, but feedback is always welcome.</p>
-      </div>
-
-      <div class="work-grid">
-        <article class="card featured reveal">
-          <div class="card-media">
-            <img src="combatframework.png" alt="Combat Framework Roblox thumbnail" loading="eager">
-          </div>
-          <div class="card-body">
-            <span class="role">Reusable combat system · Luau OOP</span>
-            <h3>Combat Framework</h3>
-            <p>A modular melee combat framework built around hitboxes, combat states, and reliable server-side hit detection.</p>
-            <div class="tags"><span class="tag">Combat</span><span class="tag">Framework</span><span class="tag">Luau OOP</span><span class="tag">Networking</span></div>
-            <div class="card-foot">
-              <span class="meta">73 visits · updated 2026-05</span>
-              <a class="card-link" href="https://www.roblox.com/games/91647918827101/Combat-Framework" target="_blank" rel="noopener" aria-label="Open Combat Framework on Roblox"></a>
-              <span class="link">View experience <span class="arrow" aria-hidden="true">→</span></span>
-            </div>
-          </div>
-        </article>
-
-        <article class="card reveal">
-          <div class="card-media"><img src="odmgear.png" alt="ODM Gear Showcase Roblox thumbnail" loading="lazy"></div>
-          <div class="card-body">
-            <span class="role">Physics traversal · momentum</span>
-            <h3>ODM Gear Showcase</h3>
-            <p>Attack on Titan-style omni-directional mobility gear: grappling, swinging, and real momentum. My oldest live project, and one of my favourites.</p>
-            <div class="tags"><span class="tag">Movement</span><span class="tag">Physics</span><span class="tag">Grappling</span></div>
-            <div class="card-foot">
-              <span class="meta">13 visits · 1 like</span>
-              <a class="card-link" href="https://www.roblox.com/games/10441308512/ODM-Gear-Showcase" target="_blank" rel="noopener" aria-label="Open ODM Gear Showcase on Roblox"></a>
-              <span class="link">View <span class="arrow" aria-hidden="true">→</span></span>
-            </div>
-          </div>
-        </article>
-
-        <article class="card reveal">
-          <div class="card-media"><img src="grappling.png" alt="GrapplingGameBaseplate Roblox thumbnail" loading="lazy"></div>
-          <div class="card-body">
-            <span class="role">R15 traversal base · template</span>
-            <h3>Grappling Game</h3>
-            <p>A grappling-hook traversal game made in R15. This was a fun commission for one of my clients; I scripted the whole game, and the client provided the assets.</p>
-            <div class="tags"><span class="tag">Movement</span><span class="tag">Grappling</span><span class="tag">Template</span></div>
-            <div class="card-foot">
-              <span class="meta">26 visits · created 2026</span>
-              <a class="card-link" href="https://www.roblox.com/games/100061109427541/GrapplingGameBaseplate" target="_blank" rel="noopener" aria-label="Open GrapplingGameBaseplate on Roblox"></a>
-              <span class="link">View <span class="arrow" aria-hidden="true">→</span></span>
-            </div>
-          </div>
-        </article>
-
-        <article class="card reveal">
-          <div class="card-media"><img src="battlearena.png" alt="BattleArena Roblox thumbnail" loading="lazy"></div>
-          <div class="card-body">
-            <span class="role">PvP arena · framework testbed</span>
-            <h3>BattleArena</h3>
-            <p>An anime battle arena-style game and my most recent project. It is still in progress, with four characters in testing, but feel free to check it out.</p>
-            <div class="tags"><span class="tag">Combat</span><span class="tag">PvP</span><span class="tag">Arena</span></div>
-            <div class="card-foot">
-              <span class="meta">9 visits · active Jul 2026</span>
-              <a class="card-link" href="https://www.roblox.com/games/74673380921481/BattleArena" target="_blank" rel="noopener" aria-label="Open BattleArena on Roblox"></a>
-              <span class="link">View <span class="arrow" aria-hidden="true">→</span></span>
-            </div>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <!-- CLIPS -->
-    <section class="section wrap panel" id="clips" aria-labelledby="clips-title">
-      <div class="section-head reveal">
-        <div>
-          <p class="eyebrow">Video clips</p>
-          <h2 id="clips-title">A few clips saved from my projects.</h2>
-        </div>
-      </div>
-
-      <div class="clip-grid">
-        <article class="clip-card reveal">
-          <div class="clip-media">
-            <video controls preload="metadata" playsinline aria-label="ODM Gear Showcase video">
-              <source src="videos/ODMGearShowcase.mp4" type="video/mp4">
-            </video>
-          </div>
-          <div class="clip-body"><h3>ODM Gear Showcase</h3></div>
-        </article>
-
-        <article class="clip-card reveal">
-          <div class="clip-media">
-            <video controls preload="metadata" playsinline aria-label="Combat Showcase 2 video">
-              <source src="videos/CombatShowcase2.mp4" type="video/mp4">
-            </video>
-          </div>
-          <div class="clip-body"><h3>Combat Showcase 2</h3></div>
-        </article>
-
-        <article class="clip-card reveal">
-          <div class="clip-media">
-            <video controls preload="metadata" playsinline aria-label="UI Showcase 2 video">
-              <source src="videos/UIShowcase2.mp4" type="video/mp4">
-            </video>
-          </div>
-          <div class="clip-body"><h3>UI Showcase 2</h3></div>
-        </article>
-
-        <article class="clip-card reveal">
-          <div class="clip-media">
-            <video controls preload="metadata" playsinline aria-label="Zombie Survivor video">
-              <source src="videos/ZombieSurvivor.mp4" type="video/mp4">
-            </video>
-          </div>
-          <div class="clip-body"><h3>Zombie Survivor</h3></div>
-        </article>
-
-        <article class="clip-card reveal">
-          <div class="clip-media">
-            <video controls preload="metadata" playsinline aria-label="Combat System 1 video">
-              <source src="videos/CombatSystem1.mp4" type="video/mp4">
-            </video>
-          </div>
-          <div class="clip-body"><h3>Combat System 1</h3></div>
-        </article>
-
-        <article class="clip-card reveal">
-          <div class="clip-media">
-            <video controls preload="metadata" playsinline aria-label="Grappling System video">
-              <source src="videos/GrapplingSystem.mp4" type="video/mp4">
-            </video>
-          </div>
-          <div class="clip-body"><h3>Grappling System</h3></div>
-        </article>
-
-        <article class="clip-card reveal">
-          <div class="clip-media">
-            <video controls preload="metadata" playsinline aria-label="UI Showcase video">
-              <source src="videos/UIShowcase.mp4" type="video/mp4">
-            </video>
-          </div>
-          <div class="clip-body"><h3>UI Showcase</h3></div>
-        </article>
-      </div>
-    </section>
-
-    <!-- ABOUT -->
-    <section class="section wrap panel about" id="about" aria-labelledby="about-title">
-      <div class="about-grid">
-        <div class="about-aside reveal">
-          <p class="eyebrow">About</p>
-          <h2 id="about-title">Here's a little about me..</h2>
-        </div>
-        <div class="about-copy reveal">
-          <p>I'm <strong>ujji_k06</strong>, a Roblox developer who works across the whole Luau stack. I'm not a one-trick scripter — I build gameplay loops, data and saves, economies, UI, secure networking, and the frameworks that keep all of it clean as a project grows.</p>
-          <p>I've been building on Roblox <strong>since 2022</strong>. Most of my public work is technical demos and reusable frameworks, and I am actively looking to be part of a team so I can grow my own portfolio. If your game needs a reliable scripter who won't ghost you, that's exactly me.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- SPECIALTIES -->
-    <section class="section wrap panel" id="specialties" aria-labelledby="spec-title">
-      <div class="section-head reveal">
-        <div>
-          <p class="eyebrow">Specialties</p>
-          <h2 id="spec-title">Full-stack Luau.</h2>
-        </div>
-        <p>These are some of the systems I specialise in for Roblox games.</p>
-      </div>
-      <div class="bento">
-        <div class="cell wide reveal"><span class="num">01</span><strong>Gameplay systems<small>Loops, rounds, abilities, progression — the core that makes a game a game.</small></strong></div>
-        <div class="cell reveal"><span class="num">02</span><strong>Combat &amp; movement<small>Hitboxes, states, grappling, momentum.</small></strong></div>
-        <div class="cell reveal"><span class="num">03</span><strong>Data &amp; saves<small>DataStores, profiles, session safety.</small></strong></div>
-        <div class="cell reveal"><span class="num">04</span><strong>Economy &amp; shops<small>Currencies, items, monetisation.</small></strong></div>
-        <div class="cell reveal"><span class="num">05</span><strong>UI &amp; UX<small>Menus, HUDs, responsive interfaces.</small></strong></div>
-        <div class="cell reveal"><span class="num">06</span><strong>Networking &amp; anti-exploit<small>Remotes, server authority, validation.</small></strong></div>
-        <div class="cell wide reveal"><span class="num">07</span><strong>Frameworks &amp; tooling<small>Reusable, OOP-driven systems and the tools that make a codebase pleasant to extend.</small></strong></div>
-      </div>
-    </section>
-
-    <!-- CONTACT -->
-    <section class="section wrap panel" id="contact" aria-labelledby="contact-title">
-      <div class="contact-panel reveal">
-        <p class="eyebrow" style="justify-content:center">Have an idea?</p>
-        <h2 id="contact-title">Let's talk about it.</h2>
-        <p>Whether it's a combat prototype, a data layer, an economy, or a whole systems overhaul — tell me what you're building and I'll tell you how I can help build it.</p>
-        <div class="contact-actions">
-          <a class="btn social roblox-social" href="https://www.roblox.com/users/2561421989/profile" target="_blank" rel="noopener">
-            <b>Roblox Profile</b><small>ujji_k06</small>
-          </a>
-          <a class="btn social discord-social" href="https://discord.com/" target="_blank" rel="noopener" aria-label="Discord: .ujji">
-            <b>Discord</b><small>.ujji</small>
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <div class="wrap">
-      <span>© <span id="yr"></span> ujji_k06</span>
-      <a href="#top">Back to top ↑</a>
-    </div>
-  </footer>
-
-  <script>
-    // year
-    document.getElementById("yr").textContent = new Date().getFullYear();
-
-    // theme
-    (() => {
-      const root = document.documentElement;
-      const toggle = document.querySelector(".theme-toggle");
-      const label = document.querySelector("[data-theme-label]");
-      let saved = null;
-      try { saved = localStorage.getItem("ujji-theme"); } catch {}
-      const initial = saved || "dark";
-      function setTheme(t) {
-        root.dataset.theme = t;
-        try { localStorage.setItem("ujji-theme", t); } catch {}
-        const light = t === "light";
-        label.textContent = light ? "Daybreak" : "Nightfall";
-        toggle.setAttribute("aria-pressed", String(light));
-        toggle.setAttribute("aria-label", light ? "Switch to Nightfall theme" : "Switch to Daybreak theme");
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta
+      name="description"
+      content="ujji_k06 — a Roblox Luau developer building the systems behind good games: gameplay, combat, movement, data, economy, UI, networking, and reusable frameworks."
+    />
+    <title>ujji_k06 — Roblox Luau Developer</title>
+    <style>
+      :root {
+        --bg: #08090f;
+        --bg-2: #0d0f1a;
+        --surface: #12141f;
+        --surface-2: #171a27;
+        --text: #e7ebf5;
+        --muted: #a1a8bc;
+        --faint: #687089;
+        --accent: #ff6a3d;
+        --accent-2: #ffb37a;
+        --accent-3: #7aa2ff;
+        --line: rgba(255, 255, 255, 0.08);
+        --line-2: rgba(255, 255, 255, 0.14);
+        --glow: color-mix(in srgb, var(--accent) 40%, transparent);
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+        --r: 16px;
+        --r-sm: 11px;
+        --font:
+          Aptos, "Segoe UI Variable", "Inter", ui-sans-serif, system-ui,
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        --display:
+          "Segoe UI Variable Display", Aptos, "Inter", ui-sans-serif, system-ui,
+          sans-serif;
+        --mono:
+          "Cascadia Code", "JetBrains Mono", Consolas, "SFMono-Regular", Menlo,
+          monospace;
+        --ease: cubic-bezier(0.22, 1, 0.36, 1);
       }
-      setTheme(initial);
-      toggle.addEventListener("click", () => setTheme(root.dataset.theme === "light" ? "dark" : "light"));
-    })();
 
-    // header shadow on scroll
-    (() => {
-      const header = document.getElementById("header");
-      const onScroll = () => header.classList.toggle("scrolled", window.scrollY > 12);
-      onScroll();
-      addEventListener("scroll", onScroll, { passive: true });
-    })();
+      html[data-theme="light"] {
+        --bg: #eef0f5;
+        --bg-2: #e6e9f1;
+        --surface: #ffffff;
+        --surface-2: #f4f6fb;
+        --text: #0e1020;
+        --muted: #4c5470;
+        --faint: #9aa1ba;
+        --accent: #2f52ff;
+        --accent-2: #6f86ff;
+        --accent-3: #ff6a3d;
+        --line: rgba(16, 20, 40, 0.1);
+        --line-2: rgba(16, 20, 40, 0.16);
+        --shadow: 0 26px 70px rgba(20, 28, 60, 0.16);
+      }
 
-    // smooth same-page links in every browser
-    (() => {
-      const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      const jumpTo = (target) => {
-        const start = scrollY;
-        const end = Math.max(0, target.getBoundingClientRect().top + scrollY - 72);
-        const distance = end - start;
-        const duration = Math.min(1100, Math.max(620, Math.abs(distance) * .42));
-        const started = performance.now();
+      * {
+        box-sizing: border-box;
+      }
 
-        const timer = setInterval(() => {
-          const progress = Math.min(1, (performance.now() - started) / duration);
-          scrollTo(0, start + distance * ease(progress));
-          dispatchEvent(new Event("scroll"));
-          if (progress >= 1) clearInterval(timer);
-        }, 16);
-      };
+      html {
+        scroll-behavior: smooth;
+        background: var(--bg);
+        overflow-x: hidden;
+        -webkit-text-size-adjust: 100%;
+      }
 
-      document.querySelectorAll('a[href^="#"]').forEach(link => {
-        link.addEventListener("click", (event) => {
-          const target = document.querySelector(link.getAttribute("href"));
-          if (!target) return;
-          event.preventDefault();
-          jumpTo(target);
-          history.pushState(null, "", link.getAttribute("href"));
+      body {
+        margin: 0;
+        min-width: 320px;
+        overflow-x: hidden;
+        color: var(--text);
+        background:
+          radial-gradient(
+            120% 90% at 78% -10%,
+            color-mix(in srgb, var(--accent) 16%, transparent),
+            transparent 45%
+          ),
+          radial-gradient(
+            90% 80% at 6% 28%,
+            color-mix(in srgb, var(--accent-3) 14%, transparent),
+            transparent 52%
+          ),
+          linear-gradient(180deg, var(--bg), var(--bg-2) 48%, var(--bg));
+        background-attachment: fixed;
+        font-family: var(--font);
+        line-height: 1.55;
+        text-rendering: geometricPrecision;
+        -webkit-font-smoothing: antialiased;
+        font-synthesis-weight: none;
+        transition:
+          background-color 0.4s var(--ease),
+          color 0.4s var(--ease);
+      }
+
+      /* ---------------- ambient background layers ---------------- */
+      .bg-layer {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+
+      .grid-layer {
+        z-index: 0;
+        background-image:
+          linear-gradient(var(--line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--line) 1px, transparent 1px);
+        background-size: 74px 74px;
+        -webkit-mask-image: radial-gradient(
+          120% 90% at 50% 0%,
+          #000 30%,
+          transparent 75%
+        );
+        mask-image: radial-gradient(
+          120% 90% at 50% 0%,
+          #000 30%,
+          transparent 75%
+        );
+        opacity: 0.6;
+      }
+
+      .aurora {
+        z-index: 0;
+        overflow: hidden;
+      }
+      .aurora::before,
+      .aurora::after {
+        content: "";
+        position: absolute;
+        width: 60vw;
+        height: 60vw;
+        border-radius: 50%;
+        filter: blur(90px);
+        opacity: 0.5;
+        will-change: transform;
+      }
+      .aurora::before {
+        top: -18vw;
+        right: -10vw;
+        background: radial-gradient(
+          circle,
+          color-mix(in srgb, var(--accent) 60%, transparent),
+          transparent 62%
+        );
+        animation: drift1 26s var(--ease) infinite alternate;
+      }
+      .aurora::after {
+        top: 34vh;
+        left: -14vw;
+        background: radial-gradient(
+          circle,
+          color-mix(in srgb, var(--accent-3) 52%, transparent),
+          transparent 62%
+        );
+        animation: drift2 32s var(--ease) infinite alternate;
+      }
+      @keyframes drift1 {
+        to {
+          transform: translate3d(-8vw, 12vh, 0) scale(1.15);
+        }
+      }
+      @keyframes drift2 {
+        to {
+          transform: translate3d(10vw, -8vh, 0) scale(1.2);
+        }
+      }
+
+      /* animated lines of code */
+      .codefield {
+        z-index: 0;
+        display: flex;
+        justify-content: space-between;
+        gap: clamp(1rem, 3vw, 3rem);
+        padding: 0 clamp(0.75rem, 2vw, 2rem);
+        opacity: 0.72;
+        mix-blend-mode: screen;
+        transform: translate3d(0, var(--code-parallax, 0px), 0);
+        will-change: transform;
+        -webkit-mask-image: linear-gradient(
+          180deg,
+          transparent,
+          #000 7%,
+          #000 90%,
+          transparent
+        );
+        mask-image: linear-gradient(
+          180deg,
+          transparent,
+          #000 7%,
+          #000 90%,
+          transparent
+        );
+      }
+      html[data-theme="light"] .codefield {
+        opacity: 0.28;
+        mix-blend-mode: multiply;
+      }
+      .code-col {
+        flex: 1 1 0;
+        min-width: 0;
+        margin: 0;
+        font-family: var(--mono);
+        font-size: 12.5px;
+        line-height: 2.05;
+        white-space: pre;
+        overflow: hidden;
+        color: color-mix(in srgb, var(--text) 34%, transparent);
+        text-shadow: 0 0 18px
+          color-mix(in srgb, var(--accent-3) 22%, transparent);
+        animation: codefall linear infinite;
+        will-change: transform;
+        transform: translateY(-50%);
+      }
+      .code-col:nth-child(2) {
+        animation-duration: 58s;
+        opacity: 0.72;
+      }
+      .code-col:nth-child(1) {
+        animation-duration: 74s;
+      }
+      .code-col:nth-child(3) {
+        animation-duration: 66s;
+        opacity: 0.8;
+      }
+      .code-col:nth-child(4) {
+        animation-duration: 82s;
+        opacity: 0.6;
+      }
+      .code-col .kw {
+        color: color-mix(in srgb, var(--accent) 66%, transparent);
+      }
+      .code-col .fn {
+        color: color-mix(in srgb, var(--accent-3) 70%, transparent);
+      }
+      @keyframes codefall {
+        from {
+          transform: translateY(-50%);
+        }
+        to {
+          transform: translateY(0);
+        }
+      }
+      @media (max-width: 880px) {
+        .code-col:nth-child(3),
+        .code-col:nth-child(4) {
+          display: none;
+        }
+      }
+      @media (max-width: 560px) {
+        .code-col:nth-child(1) {
+          display: none;
+        }
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+        height: auto;
+      }
+      button {
+        font: inherit;
+      }
+      button,
+      a {
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
+        border-radius: 4px;
+      }
+      ::selection {
+        background: var(--accent);
+        color: #fff;
+      }
+
+      /* ---------------- header ---------------- */
+      .site-header {
+        position: fixed;
+        inset: 0 0 auto 0;
+        z-index: 30;
+        border-bottom: 1px solid transparent;
+        transition:
+          background 0.3s var(--ease),
+          border-color 0.3s var(--ease),
+          backdrop-filter 0.3s;
+      }
+      .site-header.scrolled {
+        background: color-mix(in srgb, var(--bg) 72%, transparent);
+        backdrop-filter: blur(20px) saturate(1.4);
+        border-bottom-color: var(--line);
+      }
+      .nav {
+        width: min(1200px, calc(100% - 2.5rem));
+        margin: 0 auto;
+        min-height: 74px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.7rem;
+        font-weight: 750;
+        letter-spacing: -0.01em;
+        font-size: 1rem;
+      }
+      .brand-mark {
+        width: 2.35rem;
+        height: 2.35rem;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid var(--line-2);
+        box-shadow:
+          0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent),
+          0 6px 20px rgba(0, 0, 0, 0.4);
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: clamp(1.6rem, 3vw, 3.4rem);
+      }
+      .nav-links a {
+        padding: 0.6rem 0.08rem;
+        border-radius: var(--r-sm);
+        color: var(--text);
+        font-family: var(--display);
+        font-size: clamp(1rem, 1.35vw, 1.15rem);
+        font-weight: 520;
+        letter-spacing: -0.018em;
+        transition:
+          color 0.2s,
+          text-shadow 0.2s,
+          transform 0.2s var(--ease);
+      }
+      .nav-links a:hover {
+        color: #fff;
+        text-shadow: 0 0 18px
+          color-mix(in srgb, var(--accent-3) 28%, transparent);
+        transform: translateY(-1px);
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .theme-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.5rem 0.75rem;
+        border-radius: var(--r-sm);
+        border: 1px solid var(--line);
+        background: color-mix(in srgb, var(--surface) 60%, transparent);
+        color: var(--text);
+        cursor: pointer;
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        font-variant-numeric: tabular-nums;
+        transition:
+          border-color 0.2s,
+          transform 0.2s var(--ease);
+      }
+      .theme-toggle:hover {
+        border-color: var(--line-2);
+        transform: translateY(-1px);
+      }
+      .nav-cta {
+        padding: 0.58rem 1rem;
+        border-radius: var(--r-sm);
+        background: var(--text);
+        color: var(--bg);
+        font-weight: 650;
+        font-size: 0.9rem;
+        transition:
+          transform 0.2s var(--ease),
+          box-shadow 0.2s;
+      }
+      .nav-cta:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+      }
+
+      /* ---------------- layout ---------------- */
+      main {
+        position: relative;
+        z-index: 1;
+      }
+      .wrap {
+        width: min(1200px, calc(100% - 2.5rem));
+        margin: 0 auto;
+      }
+      .section {
+        padding: clamp(4.5rem, 9vw, 8.5rem) 0;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 1.1rem;
+      }
+      .eyebrow::before {
+        content: "";
+        width: 1.6rem;
+        height: 1px;
+        background: var(--accent);
+      }
+
+      h1,
+      h2,
+      h3 {
+        margin: 0;
+        font-family: var(--display);
+        letter-spacing: -0.035em;
+        line-height: 1;
+        font-weight: 650;
+      }
+      p {
+        margin: 0;
+      }
+      .grad {
+        background: linear-gradient(
+          100deg,
+          var(--accent),
+          var(--accent-2) 60%,
+          var(--accent-3)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+
+      /* ---------------- hero ---------------- */
+      .hero {
+        position: relative;
+        min-height: 100svh;
+        display: grid;
+        align-content: center;
+        padding: 8.5rem 0 4.5rem;
+      }
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.5rem 0.85rem;
+        border-radius: 999px;
+        border: 1px solid var(--line-2);
+        background: color-mix(in srgb, var(--surface) 55%, transparent);
+        backdrop-filter: blur(8px);
+        font-size: 0.82rem;
+        color: var(--muted);
+        margin-bottom: 1.8rem;
+        width: fit-content;
+      }
+      .badge .dot {
+        width: 0.5rem;
+        height: 0.5rem;
+        border-radius: 50%;
+        background: #35d07f;
+        box-shadow: 0 0 0 0 #35d07f;
+        animation: ping 2.6s var(--ease) infinite;
+      }
+      .badge b {
+        color: var(--text);
+        font-weight: 650;
+      }
+      @keyframes ping {
+        0% {
+          box-shadow: 0 0 0 0 color-mix(in srgb, #35d07f 70%, transparent);
+        }
+        70%,
+        100% {
+          box-shadow: 0 0 0 7px transparent;
+        }
+      }
+
+      .hero h1 {
+        max-width: 16ch;
+        font-size: clamp(2.9rem, 8vw, 6.6rem);
+        line-height: 0.96;
+        margin-bottom: 1.6rem;
+        font-weight: 640;
+        text-wrap: balance;
+      }
+      .hero-lead {
+        max-width: 40rem;
+        color: var(--muted);
+        font-size: clamp(1.04rem, 1.65vw, 1.24rem);
+        line-height: 1.62;
+        font-weight: 400;
+      }
+      .hero-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        margin-top: 2.2rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        min-height: 3rem;
+        padding: 0.8rem 1.35rem;
+        border-radius: 999px;
+        border: 1px solid var(--line-2);
+        background: color-mix(in srgb, var(--surface) 60%, transparent);
+        color: var(--text);
+        font-weight: 540;
+        cursor: pointer;
+        transition:
+          transform 0.2s var(--ease),
+          border-color 0.2s,
+          background 0.2s,
+          box-shadow 0.2s;
+      }
+      .btn .arrow {
+        transition: transform 0.2s var(--ease);
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        border-color: var(--line-2);
+      }
+      .btn:hover .arrow {
+        transform: translateX(3px);
+      }
+      .btn.primary {
+        border-color: transparent;
+        background: linear-gradient(
+          120deg,
+          var(--accent),
+          color-mix(in srgb, var(--accent) 60%, var(--accent-2))
+        );
+        color: #fff;
+        box-shadow: 0 12px 30px -8px var(--glow);
+      }
+      .btn.primary:hover {
+        box-shadow: 0 18px 40px -8px var(--glow);
+      }
+
+      .hero-metrics {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 2.4rem;
+        margin-top: 3.4rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--line);
+      }
+      .metric strong {
+        display: block;
+        font-family: var(--display);
+        font-size: clamp(1.6rem, 3vw, 2.3rem);
+        font-weight: 620;
+        letter-spacing: -0.035em;
+      }
+      .metric span {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--faint);
+      }
+
+      /* ---------------- marquee ---------------- */
+      .marquee {
+        position: relative;
+        border-block: 1px solid var(--line);
+        overflow: hidden;
+        background:
+          linear-gradient(
+            90deg,
+            transparent,
+            color-mix(in srgb, var(--surface) 56%, transparent) 14%,
+            color-mix(in srgb, var(--surface) 56%, transparent) 86%,
+            transparent
+          ),
+          color-mix(in srgb, var(--surface) 34%, transparent);
+        -webkit-mask-image: linear-gradient(
+          90deg,
+          transparent,
+          #000 7%,
+          #000 93%,
+          transparent
+        );
+        mask-image: linear-gradient(
+          90deg,
+          transparent,
+          #000 7%,
+          #000 93%,
+          transparent
+        );
+      }
+      .marquee-track {
+        display: flex;
+        width: max-content;
+        transform: translate3d(-50%, 0, 0);
+        animation: marquee-ltr 28s linear infinite;
+        will-change: transform;
+      }
+      .marquee-track span {
+        display: inline-flex;
+        align-items: center;
+        padding: 1.15rem 0;
+        font-weight: 610;
+        font-size: clamp(0.95rem, 1.7vw, 1.2rem);
+        text-transform: uppercase;
+        white-space: nowrap;
+        color: var(--muted);
+        letter-spacing: 0.055em;
+      }
+      .marquee-track i {
+        font-style: normal;
+        color: var(--accent);
+        padding: 0 1.5rem;
+        font-weight: 700;
+      }
+      .marquee-track em {
+        font-style: normal;
+        padding-left: 2.6rem;
+        color: var(--text);
+      }
+      @keyframes marquee-ltr {
+        from {
+          transform: translate3d(-50%, 0, 0);
+        }
+        to {
+          transform: translate3d(0, 0, 0);
+        }
+      }
+
+      /* ---------------- section head ---------------- */
+      .section-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(15rem, 28rem);
+        gap: 2rem 3rem;
+        align-items: end;
+        margin-bottom: 2.6rem;
+      }
+      .section-head h2 {
+        font-size: clamp(2.2rem, 5vw, 4rem);
+        font-weight: 650;
+      }
+      .section-head p {
+        color: var(--muted);
+        font-size: 1rem;
+      }
+
+      /* ---------------- work ---------------- */
+      .work-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.1rem;
+      }
+      .card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: color-mix(in srgb, var(--surface) 70%, transparent);
+        backdrop-filter: blur(6px);
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.3s var(--ease),
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .card.featured {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(19rem, 0.9fr);
+      }
+      .card:hover {
+        transform: translateY(-6px);
+        border-color: var(--line-2);
+        background: color-mix(in srgb, var(--surface) 84%, transparent);
+      }
+      .card-media {
+        position: relative;
+        overflow: hidden;
+        background: #05060c;
+        min-height: 13rem;
+      }
+      .card.featured .card-media {
+        min-height: 24rem;
+      }
+      .card-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        aspect-ratio: 16/9;
+        transform: scale(1.02);
+        transition:
+          transform 0.5s var(--ease),
+          filter 0.5s;
+      }
+      .card:hover .card-media img {
+        transform: scale(1.07);
+        filter: saturate(1.12);
+      }
+      .card-media::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        background: linear-gradient(
+          180deg,
+          transparent 55%,
+          color-mix(in srgb, var(--surface) 92%, transparent)
+        );
+        opacity: 0;
+        transition: opacity 0.4s;
+      }
+      .card.featured .card-media::after {
+        background: linear-gradient(
+          90deg,
+          transparent 55%,
+          color-mix(in srgb, var(--surface) 60%, transparent)
+        );
+      }
+      .card-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.9rem;
+        padding: clamp(1.2rem, 2.2vw, 1.9rem);
+        flex: 1;
+        min-width: 0;
+      }
+      .role {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .card h3 {
+        font-size: clamp(1.35rem, 2.4vw, 2.1rem);
+        font-weight: 620;
+        letter-spacing: -0.025em;
+        line-height: 1.05;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        hyphens: auto;
+      }
+      .card.featured h3 {
+        font-size: clamp(1.8rem, 3vw, 2.8rem);
+      }
+      .card p {
+        color: var(--muted);
+        font-size: 0.96rem;
+        line-height: 1.55;
+      }
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+        margin-top: auto;
+        padding-top: 0.3rem;
+      }
+      .tag {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        padding: 0.3rem 0.6rem;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        color: var(--muted);
+      }
+      .card-foot {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding-top: 1rem;
+        margin-top: 0.3rem;
+        border-top: 1px solid var(--line);
+      }
+      .card-foot .meta {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        color: var(--faint);
+        font-variant-numeric: tabular-nums;
+      }
+      .card-foot .link {
+        font-weight: 600;
+        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .card-foot .link .arrow {
+        transition: transform 0.2s var(--ease);
+      }
+      .card:hover .card-foot .link {
+        color: var(--accent);
+      }
+      .card:hover .card-foot .link .arrow {
+        transform: translateX(3px);
+      }
+      .card-link {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+      }
+      .card-foot .link {
+        position: relative;
+        z-index: 3;
+      }
+
+      /* ---------------- clips ---------------- */
+      .clip-groups {
+        display: grid;
+        gap: 1rem;
+      }
+      .clip-group {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: calc(var(--r) + 2px);
+        background: color-mix(in srgb, var(--surface) 52%, transparent);
+        transition:
+          border-color 0.25s,
+          background 0.25s;
+      }
+      .clip-group[open] {
+        border-color: var(--line-2);
+        background: color-mix(in srgb, var(--surface) 68%, transparent);
+      }
+      .clip-group summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 1.15rem 1.35rem;
+        cursor: pointer;
+        list-style: none;
+        user-select: none;
+      }
+      .clip-group summary::-webkit-details-marker {
+        display: none;
+      }
+      .clip-group summary::after {
+        content: "+";
+        flex: 0 0 auto;
+        color: var(--accent);
+        font-family: var(--mono);
+        font-size: 1.25rem;
+        line-height: 1;
+        transition: transform 0.25s var(--ease);
+      }
+      .clip-group[open] summary::after {
+        transform: rotate(45deg);
+      }
+      .clip-group-title {
+        display: flex;
+        align-items: baseline;
+        gap: 0.75rem;
+        min-width: 0;
+      }
+      .clip-group-title strong {
+        font-family: var(--display);
+        font-size: clamp(1.15rem, 2vw, 1.5rem);
+        font-weight: 620;
+        letter-spacing: -0.025em;
+      }
+      .clip-group-count {
+        color: var(--faint);
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+      }
+      .clip-group .clip-grid {
+        padding: 0 1rem 1rem;
+      }
+      .clip-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1.1rem;
+      }
+      .clip-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: color-mix(in srgb, var(--surface) 70%, transparent);
+        backdrop-filter: blur(6px);
+        box-shadow: var(--shadow);
+        transition:
+          transform 0.3s var(--ease),
+          border-color 0.3s,
+          background 0.3s;
+      }
+      .clip-card:hover {
+        transform: translateY(-6px);
+        border-color: var(--line-2);
+        background: color-mix(in srgb, var(--surface) 84%, transparent);
+      }
+      .clip-media {
+        position: relative;
+        overflow: hidden;
+        background: #05060c;
+      }
+      .clip-media video {
+        display: block;
+        width: 100%;
+        aspect-ratio: 16 / 9;
+        object-fit: cover;
+        background: #05060c;
+      }
+      .clip-body {
+        padding: clamp(1rem, 1.8vw, 1.35rem);
+      }
+      .clip-card h3 {
+        font-size: clamp(1.12rem, 1.8vw, 1.55rem);
+        font-weight: 620;
+        letter-spacing: -0.02em;
+        line-height: 1.1;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        hyphens: auto;
+      }
+
+      /* ---------------- about ---------------- */
+      .about-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+        gap: clamp(2rem, 6vw, 5rem);
+      }
+      .about-aside h2 {
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        font-weight: 560;
+        letter-spacing: -0.025em;
+      }
+      .about-copy {
+        display: grid;
+        gap: 1.2rem;
+      }
+      .about-copy p {
+        color: var(--muted);
+        font-size: clamp(1.05rem, 1.7vw, 1.28rem);
+        line-height: 1.6;
+      }
+      .about-copy strong {
+        color: var(--text);
+        font-weight: 650;
+      }
+
+      /* ---------------- specialties (bento) ---------------- */
+      .bento {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 0.9rem;
+      }
+      .cell {
+        position: relative;
+        min-height: 9.5rem;
+        padding: 1.3rem;
+        border: 1px solid var(--line);
+        border-radius: var(--r);
+        background: color-mix(in srgb, var(--surface) 60%, transparent);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1rem;
+        overflow: hidden;
+        transition:
+          transform 0.25s var(--ease),
+          border-color 0.25s,
+          background 0.25s;
+      }
+      .cell:hover {
+        transform: translateY(-4px);
+        border-color: var(--line-2);
+        background: color-mix(in srgb, var(--surface) 82%, transparent);
+      }
+      .cell .num {
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        color: var(--accent);
+      }
+      .cell strong {
+        font-size: 1.12rem;
+        font-weight: 620;
+        letter-spacing: -0.01em;
+      }
+      .cell small {
+        display: block;
+        margin-top: 0.35rem;
+        color: var(--faint);
+        font-size: 0.82rem;
+        font-weight: 400;
+      }
+      .cell.wide {
+        grid-column: span 2;
+      }
+      .cell::after {
+        content: "";
+        position: absolute;
+        right: -30%;
+        top: -30%;
+        width: 60%;
+        height: 120%;
+        background: radial-gradient(
+          circle,
+          color-mix(in srgb, var(--accent) 20%, transparent),
+          transparent 70%
+        );
+        opacity: 0;
+        transition: opacity 0.3s;
+      }
+      .cell:hover::after {
+        opacity: 1;
+      }
+
+      /* ---------------- contact ---------------- */
+      .contact-panel {
+        position: relative;
+        overflow: hidden;
+        border: 1px solid var(--line-2);
+        border-radius: calc(var(--r) + 6px);
+        background:
+          radial-gradient(
+            90% 140% at 100% 0%,
+            color-mix(in srgb, var(--accent) 20%, transparent),
+            transparent 55%
+          ),
+          color-mix(in srgb, var(--surface) 78%, transparent);
+        padding: clamp(2rem, 5vw, 4rem);
+        text-align: center;
+      }
+      .contact-panel h2 {
+        font-size: clamp(2.2rem, 5.5vw, 4.4rem);
+        font-weight: 650;
+        max-width: 16ch;
+        margin: 0 auto 1rem;
+      }
+      .contact-panel p {
+        max-width: 40ch;
+        margin: 0 auto;
+        color: var(--muted);
+        font-size: 1.05rem;
+      }
+      .contact-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+        justify-content: center;
+        margin-top: 2.2rem;
+      }
+      .btn.social {
+        flex-direction: column;
+        gap: 0.1rem;
+        min-width: 12rem;
+        padding: 0.85rem 1.4rem;
+        align-items: flex-start;
+        text-align: left;
+        font-weight: 540;
+      }
+      .btn.social small {
+        font-family: var(--mono);
+        font-size: 0.72rem;
+        color: var(--faint);
+        font-weight: 400;
+      }
+      .btn.social b {
+        font-weight: 620;
+        font-size: 1rem;
+      }
+      .btn.roblox-social {
+        border-color: rgba(255, 255, 255, 0.72);
+        background: #fff;
+        color: #07090f;
+        box-shadow: 0 16px 36px -18px rgba(255, 255, 255, 0.95);
+      }
+      .btn.roblox-social small {
+        color: rgba(7, 9, 15, 0.62);
+      }
+      .btn.discord-social {
+        border-color: rgba(88, 101, 242, 0.68);
+        background: linear-gradient(135deg, #6f7cff, #5865f2 58%, #4752c4);
+        color: #fff;
+        box-shadow: 0 16px 38px -18px rgba(88, 101, 242, 0.95);
+      }
+      .btn.discord-social small {
+        color: rgba(255, 255, 255, 0.76);
+      }
+
+      /* ---------------- footer ---------------- */
+      .footer {
+        position: relative;
+        z-index: 1;
+        border-top: 1px solid var(--line);
+      }
+      .footer .wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+        padding: 1.8rem 0;
+      }
+      .footer span {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--faint);
+        font-variant-numeric: tabular-nums;
+      }
+      .footer a {
+        font-family: var(--mono);
+        font-size: 0.76rem;
+        color: var(--muted);
+      }
+      .footer a:hover {
+        color: var(--text);
+      }
+
+      /* ---------------- motion: reveal + flow ---------------- */
+      .panel {
+        scroll-margin-top: 6rem;
+      }
+      .reveal {
+        opacity: 0;
+        transform: translate3d(0, 42px, 0) scale(0.985);
+        filter: blur(8px);
+        transition:
+          opacity 0.72s var(--ease),
+          transform 0.78s var(--ease),
+          filter 0.78s var(--ease);
+      }
+      .section-head.reveal {
+        transform: translate3d(-22px, 34px, 0) scale(0.99);
+      }
+      .card.reveal,
+      .cell.reveal,
+      .contact-panel.reveal {
+        transform: perspective(1200px) translate3d(0, 44px, 0) rotateX(5deg)
+          scale(0.985);
+        transform-origin: 50% 0;
+      }
+      .about-aside.reveal {
+        transform: translate3d(-28px, 28px, 0) scale(0.99);
+      }
+      .about-copy.reveal {
+        transform: translate3d(28px, 28px, 0) scale(0.99);
+      }
+      .reveal.in {
+        opacity: 1;
+        transform: translate3d(0, 0, 0) scale(1);
+        filter: blur(0);
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .reveal {
+          transition-duration: 0.5s;
+        }
+      }
+
+      /* ---------------- responsive ---------------- */
+      @media (max-width: 900px) {
+        .nav-links {
+          display: none;
+        }
+        .section-head,
+        .about-grid,
+        .card.featured {
+          grid-template-columns: 1fr;
+        }
+        .work-grid,
+        .clip-grid {
+          grid-template-columns: 1fr;
+        }
+        .bento {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .cell.wide {
+          grid-column: span 2;
+        }
+        .card.featured .card-media {
+          min-height: 15rem;
+        }
+      }
+      @media (max-width: 560px) {
+        .wrap,
+        .nav {
+          width: min(100% - 1.5rem, 1200px);
+        }
+        .hero-metrics {
+          gap: 1.4rem;
+        }
+        .bento {
+          grid-template-columns: 1fr;
+        }
+        .cell.wide {
+          grid-column: span 1;
+        }
+        .btn.social {
+          min-width: 0;
+          width: 100%;
+        }
+        .hero-actions .btn {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-layer grid-layer" aria-hidden="true"></div>
+    <div class="bg-layer aurora" aria-hidden="true"></div>
+    <div class="bg-layer codefield" aria-hidden="true">
+      <pre class="code-col"></pre>
+      <pre class="code-col"></pre>
+      <pre class="code-col"></pre>
+      <pre class="code-col"></pre>
+    </div>
+
+    <header class="site-header" id="header">
+      <nav class="nav" aria-label="Primary">
+        <a class="brand" href="#top" aria-label="ujji_k06 home">
+          <img
+            class="brand-mark"
+            src="profilepic.jpg"
+            alt="ujji_k06 avatar"
+            width="38"
+            height="38"
+            decoding="async"
+            fetchpriority="high"
+          />
+          <span>ujji_k06</span>
+        </a>
+        <div class="nav-links">
+          <a href="#work">Work</a>
+          <a href="#clips">Clips</a>
+          <a href="#about">About</a>
+          <a href="#specialties">Specialties</a>
+        </div>
+        <div class="nav-right">
+          <button
+            class="theme-toggle"
+            type="button"
+            aria-label="Switch to Light Mode"
+            aria-pressed="false"
+          >
+            <span aria-hidden="true">◐</span
+            ><span data-theme-label>Light Mode</span>
+          </button>
+          <a class="nav-cta" href="#contact">Contact me</a>
+        </div>
+      </nav>
+    </header>
+
+    <main id="top">
+      <!-- HERO -->
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div>
+          <span class="badge"
+            ><span class="dot" aria-hidden="true"></span> <b>Available</b> for
+            commissions &amp; studio work</span
+          >
+          <h1 id="hero-title">
+            Roblox developer<br />
+            for hire with <span class="grad">5+ years of experience.</span>
+          </h1>
+          <p class="hero-lead">
+            Hi! I'm Ujji — a Roblox programmer with 5+ years of coding
+            experience across Luau, Python, C++, HTML, and TypeScript. I've been
+            freelancing on Roblox since 2022, and I'm always happy to help turn
+            a good idea into something playable.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="#work"
+              >See the work <span class="arrow" aria-hidden="true">→</span></a
+            >
+            <a class="btn" href="#contact">Contact me</a>
+          </div>
+          <div class="hero-metrics">
+            <div class="metric">
+              <strong>2022</strong><span>Building on Roblox</span>
+            </div>
+            <div class="metric">
+              <strong>Full-stack</strong><span>Luau systems</span>
+            </div>
+            <div class="metric">
+              <strong>Frameworks</strong><span>Reusable &amp; readable</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- MARQUEE -->
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+          <span
+            ><em>Gameplay</em
+            ><i>/</i
+            >Combat<i>/</i>Movement<i>/</i>Data<i>/</i>Economy<i>/</i>UI<i>/</i>Networking<i>/</i>Anti-exploit<i>/</i>Luau&nbsp;OOP<i>/</i>Frameworks<i
+              >/</i
+            ></span
+          >
+          <span
+            ><em>Gameplay</em
+            ><i>/</i
+            >Combat<i>/</i>Movement<i>/</i>Data<i>/</i>Economy<i>/</i>UI<i>/</i>Networking<i>/</i>Anti-exploit<i>/</i>Luau&nbsp;OOP<i>/</i>Frameworks<i
+              >/</i
+            ></span
+          >
+        </div>
+      </div>
+
+      <!-- WORK -->
+      <section
+        class="section wrap panel"
+        id="work"
+        aria-labelledby="work-title"
+      >
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Selected work</p>
+            <h2 id="work-title">
+              Roblox projects you might want to check out.
+            </h2>
+          </div>
+          <p>
+            Live Roblox projects, mostly systems demos and reusable frameworks.
+            Some are experiments rather than full games, but feedback is always
+            welcome.
+          </p>
+        </div>
+
+        <div class="work-grid">
+          <article class="card featured reveal">
+            <div class="card-media">
+              <img
+                src="combatframework.webp"
+                alt="Combat Framework Roblox thumbnail"
+                loading="lazy"
+                decoding="async"
+                fetchpriority="low"
+              />
+            </div>
+            <div class="card-body">
+              <span class="role">Reusable combat system · Luau OOP</span>
+              <h3>Combat Framework</h3>
+              <p>
+                A modular melee combat framework built around hitboxes, combat
+                states, and reliable server-side hit detection.
+              </p>
+              <div class="tags">
+                <span class="tag">Combat</span><span class="tag">Framework</span
+                ><span class="tag">Luau OOP</span
+                ><span class="tag">Networking</span>
+              </div>
+              <div class="card-foot">
+                <span class="meta">73 visits · updated 2026-05</span>
+                <a
+                  class="card-link"
+                  href="https://www.roblox.com/games/91647918827101/Combat-Framework"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Open Combat Framework on Roblox"
+                ></a>
+                <span class="link"
+                  >View experience
+                  <span class="arrow" aria-hidden="true">→</span></span
+                >
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="card-media">
+              <img
+                src="odmgear.webp"
+                alt="ODM Gear Showcase Roblox thumbnail"
+                loading="lazy"
+                decoding="async"
+                fetchpriority="low"
+              />
+            </div>
+            <div class="card-body">
+              <span class="role">Physics traversal · momentum</span>
+              <h3>ODM Gear Showcase</h3>
+              <p>
+                Attack on Titan-style omni-directional mobility gear: grappling,
+                swinging, and real momentum. My oldest live project, and one of
+                my favourites.
+              </p>
+              <div class="tags">
+                <span class="tag">Movement</span><span class="tag">Physics</span
+                ><span class="tag">Grappling</span>
+              </div>
+              <div class="card-foot">
+                <span class="meta">13 visits · 1 like</span>
+                <a
+                  class="card-link"
+                  href="https://www.roblox.com/games/10441308512/ODM-Gear-Showcase"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Open ODM Gear Showcase on Roblox"
+                ></a>
+                <span class="link"
+                  >View <span class="arrow" aria-hidden="true">→</span></span
+                >
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="card-media">
+              <img
+                src="grappling.webp"
+                alt="GrapplingGameBaseplate Roblox thumbnail"
+                loading="lazy"
+                decoding="async"
+                fetchpriority="low"
+              />
+            </div>
+            <div class="card-body">
+              <span class="role">R15 traversal base · template</span>
+              <h3>Grappling Game</h3>
+              <p>
+                A grappling-hook traversal game made in R15. This was a fun
+                commission for one of my clients; I scripted the whole game, and
+                the client provided the assets.
+              </p>
+              <div class="tags">
+                <span class="tag">Movement</span
+                ><span class="tag">Grappling</span
+                ><span class="tag">Template</span>
+              </div>
+              <div class="card-foot">
+                <span class="meta">26 visits · created 2026</span>
+                <a
+                  class="card-link"
+                  href="https://www.roblox.com/games/100061109427541/GrapplingGameBaseplate"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Open GrapplingGameBaseplate on Roblox"
+                ></a>
+                <span class="link"
+                  >View <span class="arrow" aria-hidden="true">→</span></span
+                >
+              </div>
+            </div>
+          </article>
+
+          <article class="card reveal">
+            <div class="card-media">
+              <img
+                src="battlearena.webp"
+                alt="BattleArena Roblox thumbnail"
+                loading="lazy"
+                decoding="async"
+                fetchpriority="low"
+              />
+            </div>
+            <div class="card-body">
+              <span class="role">PvP arena · framework testbed</span>
+              <h3>BattleArena</h3>
+              <p>
+                An anime battle arena-style game and my most recent project. It
+                is still in progress, with four characters in testing, but feel
+                free to check it out.
+              </p>
+              <div class="tags">
+                <span class="tag">Combat</span><span class="tag">PvP</span
+                ><span class="tag">Arena</span>
+              </div>
+              <div class="card-foot">
+                <span class="meta">9 visits · active Jul 2026</span>
+                <a
+                  class="card-link"
+                  href="https://www.roblox.com/games/74673380921481/BattleArena"
+                  target="_blank"
+                  rel="noopener"
+                  aria-label="Open BattleArena on Roblox"
+                ></a>
+                <span class="link"
+                  >View <span class="arrow" aria-hidden="true">→</span></span
+                >
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- CLIPS -->
+      <section
+        class="section wrap panel"
+        id="clips"
+        aria-labelledby="clips-title"
+      >
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Video clips</p>
+            <h2 id="clips-title">A few clips saved from my projects.</h2>
+          </div>
+          <p>Open a category to browse clips by the systems they show.</p>
+        </div>
+
+        <div class="clip-groups">
+          <details class="clip-group" open>
+            <summary>
+              <span class="clip-group-title">
+                <strong>Combat Systems</strong>
+                <span class="clip-group-count">1 clip</span>
+              </span>
+            </summary>
+            <div class="clip-grid">
+              <article class="clip-card reveal">
+                <div class="clip-media">
+                  <video
+                    controls
+                    preload="none"
+                    playsinline
+                    data-lazy-video
+                    aria-label="Combat System 1 video"
+                  >
+                    <source
+                      data-src="videos/CombatSystem1.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+                <div class="clip-body"><h3>Combat System 1</h3></div>
+              </article>
+            </div>
+          </details>
+
+          <details class="clip-group">
+            <summary>
+              <span class="clip-group-title">
+                <strong>UI/UX</strong>
+                <span class="clip-group-count">2 clips</span>
+              </span>
+            </summary>
+            <div class="clip-grid">
+              <article class="clip-card reveal">
+                <div class="clip-media">
+                  <video
+                    controls
+                    preload="none"
+                    playsinline
+                    data-lazy-video
+                    aria-label="UI Showcase 2 video"
+                  >
+                    <source
+                      data-src="videos/UIShowcase2.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+                <div class="clip-body"><h3>UI Showcase 2</h3></div>
+              </article>
+
+              <article class="clip-card reveal">
+                <div class="clip-media">
+                  <video
+                    controls
+                    preload="none"
+                    playsinline
+                    data-lazy-video
+                    aria-label="UI Showcase video"
+                  >
+                    <source data-src="videos/UIShowcase.mp4" type="video/mp4" />
+                  </video>
+                </div>
+                <div class="clip-body"><h3>UI Showcase</h3></div>
+              </article>
+            </div>
+          </details>
+
+          <details class="clip-group">
+            <summary>
+              <span class="clip-group-title">
+                <strong>Miscellaneous</strong>
+                <span class="clip-group-count">2 clips</span>
+              </span>
+            </summary>
+            <div class="clip-grid">
+              <article class="clip-card reveal">
+                <div class="clip-media">
+                  <video
+                    controls
+                    preload="none"
+                    playsinline
+                    data-lazy-video
+                    aria-label="ODM Gear Showcase video"
+                  >
+                    <source
+                      data-src="videos/ODMGearShowcase.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+                <div class="clip-body"><h3>ODM Gear Showcase</h3></div>
+              </article>
+
+              <article class="clip-card reveal">
+                <div class="clip-media">
+                  <video
+                    controls
+                    preload="none"
+                    playsinline
+                    data-lazy-video
+                    aria-label="Grappling System video"
+                  >
+                    <source
+                      data-src="videos/GrapplingSystem.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+                <div class="clip-body"><h3>Grappling System</h3></div>
+              </article>
+            </div>
+          </details>
+
+          <details class="clip-group">
+            <summary>
+              <span class="clip-group-title">
+                <strong>Amusement Rides</strong>
+                <span class="clip-group-count">2 clips</span>
+              </span>
+            </summary>
+            <div class="clip-grid">
+              <article class="clip-card reveal">
+                <div class="clip-media">
+                  <video
+                    controls
+                    preload="none"
+                    playsinline
+                    data-lazy-video
+                    aria-label="Roller Coaster video"
+                  >
+                    <source
+                      data-src="videos/RollerCoaster.mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+                <div class="clip-body"><h3>Roller Coaster</h3></div>
+              </article>
+
+              <article class="clip-card reveal">
+                <div class="clip-media">
+                  <video
+                    controls
+                    preload="none"
+                    playsinline
+                    data-lazy-video
+                    aria-label="Carousel [Unfinished] video"
+                  >
+                    <source
+                      data-src="videos/Carousel [Unfinished].mp4"
+                      type="video/mp4"
+                    />
+                  </video>
+                </div>
+                <div class="clip-body"><h3>Carousel [Unfinished]</h3></div>
+              </article>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ABOUT -->
+      <section
+        class="section wrap panel about"
+        id="about"
+        aria-labelledby="about-title"
+      >
+        <div class="about-grid">
+          <div class="about-aside reveal">
+            <p class="eyebrow">About</p>
+            <h2 id="about-title">Here's a little about me..</h2>
+          </div>
+          <div class="about-copy reveal">
+            <p>
+              I'm <strong>ujji_k06</strong>, a Roblox developer who works across
+              the whole Luau stack. I'm not a one-trick scripter — I build
+              gameplay loops, data and saves, economies, UI, secure networking,
+              and the frameworks that keep all of it clean as a project grows.
+            </p>
+            <p>
+              I've been building on Roblox <strong>since 2022</strong>. Most of
+              my public work is technical demos and reusable frameworks, and I
+              am actively looking to be part of a team so I can grow my own
+              portfolio. If your game needs a reliable scripter who won't ghost
+              you, that's exactly me.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SPECIALTIES -->
+      <section
+        class="section wrap panel"
+        id="specialties"
+        aria-labelledby="spec-title"
+      >
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Specialties</p>
+            <h2 id="spec-title">Full-stack Luau.</h2>
+          </div>
+          <p>These are some of the systems I specialise in for Roblox games.</p>
+        </div>
+        <div class="bento">
+          <div class="cell wide reveal">
+            <span class="num">01</span
+            ><strong
+              >Gameplay systems<small
+                >Loops, rounds, abilities, progression — the core that makes a
+                game a game.</small
+              ></strong
+            >
+          </div>
+          <div class="cell reveal">
+            <span class="num">02</span
+            ><strong
+              >Combat &amp; movement<small
+                >Hitboxes, states, grappling, momentum.</small
+              ></strong
+            >
+          </div>
+          <div class="cell reveal">
+            <span class="num">03</span
+            ><strong
+              >Data &amp; saves<small
+                >DataStores, profiles, session safety.</small
+              ></strong
+            >
+          </div>
+          <div class="cell reveal">
+            <span class="num">04</span
+            ><strong
+              >Economy &amp; shops<small
+                >Currencies, items, monetisation.</small
+              ></strong
+            >
+          </div>
+          <div class="cell reveal">
+            <span class="num">05</span
+            ><strong
+              >UI &amp; UX<small
+                >Menus, HUDs, responsive interfaces.</small
+              ></strong
+            >
+          </div>
+          <div class="cell reveal">
+            <span class="num">06</span
+            ><strong
+              >Networking &amp; anti-exploit<small
+                >Remotes, server authority, validation.</small
+              ></strong
+            >
+          </div>
+          <div class="cell wide reveal">
+            <span class="num">07</span
+            ><strong
+              >Frameworks &amp; tooling<small
+                >Reusable, OOP-driven systems and the tools that make a codebase
+                pleasant to extend.</small
+              ></strong
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- CONTACT -->
+      <section
+        class="section wrap panel"
+        id="contact"
+        aria-labelledby="contact-title"
+      >
+        <div class="contact-panel reveal">
+          <p class="eyebrow" style="justify-content: center">Have an idea?</p>
+          <h2 id="contact-title">Get in touch below</h2>
+          <p>
+            Whether it's a combat prototype, a data layer, an economy, or a
+            whole systems overhaul — tell me what you're building and I'll tell
+            you how I can help build it.
+          </p>
+          <div class="contact-actions">
+            <a
+              class="btn social roblox-social"
+              href="https://www.roblox.com/users/2561421989/profile"
+              target="_blank"
+              rel="noopener"
+            >
+              <b>Roblox Profile</b><small>ujji_k06</small>
+            </a>
+            <a
+              class="btn social discord-social"
+              href="https://discord.com/"
+              target="_blank"
+              rel="noopener"
+              aria-label="Discord: .ujji"
+            >
+              <b>Discord</b><small>.ujji</small>
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="wrap">
+        <span>© <span id="yr"></span> ujji_k06</span>
+        <a href="#top">Back to top ↑</a>
+      </div>
+    </footer>
+
+    <script>
+      // year
+      document.getElementById("yr").textContent = new Date().getFullYear();
+
+      // theme
+      (() => {
+        const root = document.documentElement;
+        const toggle = document.querySelector(".theme-toggle");
+        const label = document.querySelector("[data-theme-label]");
+        let saved = null;
+        try {
+          saved = localStorage.getItem("ujji-theme");
+        } catch {}
+        const initial = saved || "dark";
+        function setTheme(t) {
+          root.dataset.theme = t;
+          try {
+            localStorage.setItem("ujji-theme", t);
+          } catch {}
+          const light = t === "light";
+          label.textContent = light ? "Dark Mode" : "Light Mode";
+          toggle.setAttribute("aria-pressed", String(light));
+          toggle.setAttribute(
+            "aria-label",
+            light ? "Switch to Dark Mode" : "Switch to Light Mode",
+          );
+        }
+        setTheme(initial);
+        toggle.addEventListener("click", () =>
+          setTheme(root.dataset.theme === "light" ? "dark" : "light"),
+        );
+      })();
+
+      // header shadow on scroll
+      (() => {
+        const header = document.getElementById("header");
+        const onScroll = () =>
+          header.classList.toggle("scrolled", window.scrollY > 12);
+        onScroll();
+        addEventListener("scroll", onScroll, { passive: true });
+      })();
+
+      // smooth same-page links in every browser
+      (() => {
+        const ease = (t) =>
+          t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+        const jumpTo = (target) => {
+          const start = scrollY;
+          const end = Math.max(
+            0,
+            target.getBoundingClientRect().top + scrollY - 72,
+          );
+          const distance = end - start;
+          const duration = Math.min(
+            1100,
+            Math.max(620, Math.abs(distance) * 0.42),
+          );
+          const started = performance.now();
+
+          const timer = setInterval(() => {
+            const progress = Math.min(
+              1,
+              (performance.now() - started) / duration,
+            );
+            scrollTo(0, start + distance * ease(progress));
+            dispatchEvent(new Event("scroll"));
+            if (progress >= 1) clearInterval(timer);
+          }, 16);
+        };
+
+        document.querySelectorAll('a[href^="#"]').forEach((link) => {
+          link.addEventListener("click", (event) => {
+            const target = document.querySelector(link.getAttribute("href"));
+            if (!target) return;
+            event.preventDefault();
+            jumpTo(target);
+            history.pushState(null, "", link.getAttribute("href"));
+          });
         });
-      });
-    })();
+      })();
 
-    // reveal sections as they are put in place
-    (() => {
-      const els = Array.from(document.querySelectorAll(".reveal"));
-      if (!("IntersectionObserver" in window)) { els.forEach(e => e.classList.add("in")); return; }
+      // reveal sections as they are put in place
+      (() => {
+        const els = Array.from(document.querySelectorAll(".reveal"));
+        if (!("IntersectionObserver" in window)) {
+          els.forEach((e) => e.classList.add("in"));
+          return;
+        }
 
-      const remaining = new Set(els);
-      const reveal = (el) => {
-        el.classList.add("in");
-        remaining.delete(el);
-        if (io) io.unobserve(el);
-        if (!remaining.size) removeEventListener("scroll", revealPassed);
-      };
-      const revealPassed = () => {
-        remaining.forEach((el) => {
-          if (el.getBoundingClientRect().top < innerHeight * .9) reveal(el);
+        const remaining = new Set(els);
+        const reveal = (el) => {
+          el.classList.add("in");
+          remaining.delete(el);
+          if (io) io.unobserve(el);
+          if (!remaining.size) removeEventListener("scroll", revealPassed);
+        };
+        const revealPassed = () => {
+          remaining.forEach((el) => {
+            if (el.getBoundingClientRect().top < innerHeight * 0.9) reveal(el);
+          });
+        };
+        const io = new IntersectionObserver(
+          (ents) => {
+            ents.forEach((e) => {
+              if (e.isIntersecting) reveal(e.target);
+            });
+          },
+          { threshold: 0.08, rootMargin: "0px 0px 14% 0px" },
+        );
+
+        els.forEach((e, i) => {
+          e.style.transitionDelay = Math.min(i % 6, 5) * 70 + "ms";
+          io.observe(e);
         });
-      };
-      const io = new IntersectionObserver((ents) => {
-        ents.forEach(e => { if (e.isIntersecting) reveal(e.target); });
-      }, { threshold: 0.08, rootMargin: "0px 0px 14% 0px" });
+        revealPassed();
+        addEventListener("scroll", revealPassed, { passive: true });
+      })();
 
-      els.forEach((e, i) => {
-        e.style.transitionDelay = Math.min(i % 6, 5) * 70 + "ms";
-        io.observe(e);
-      });
-      revealPassed();
-      addEventListener("scroll", revealPassed, { passive: true });
-    })();
+      // Keep the clip categories mutually exclusive while allowing all to close.
+      (() => {
+        const groups = document.querySelectorAll(".clip-group");
+        groups.forEach((group) => {
+          group.addEventListener("toggle", () => {
+            if (!group.open) return;
+            groups.forEach((other) => {
+              if (other !== group) other.open = false;
+            });
+          });
+        });
+      })();
 
-    // moving skills banner: left-to-right, JS-driven for Firefox consistency
-    (() => {
-      const track = document.querySelector(".marquee-track");
-      if (!track) return;
-      let last = performance.now();
-      let x = -track.scrollWidth / track.children.length;
+      // Load video bytes only as the clips approach the viewport.
+      (() => {
+        const videos = document.querySelectorAll("[data-lazy-video]");
+        if (!videos.length) return;
 
-      const tick = () => {
-        const itemWidth = track.scrollWidth / track.children.length;
-        const now = performance.now();
-        const dt = Math.min(40, now - last);
-        last = now;
-        x += dt * .085;
-        if (x >= 0) x -= itemWidth;
-        track.style.transform = `translate3d(${x}px,0,0)`;
-      };
-      tick();
-      setInterval(tick, 16);
-    })();
+        let observer;
+        const load = (video) => {
+          const source = video.querySelector("source[data-src]");
+          if (!source) return;
+          source.src = source.dataset.src;
+          source.removeAttribute("data-src");
+          video.load();
+          observer?.unobserve(video);
+        };
 
-    // animated code columns that change with scroll
-    (() => {
-      const snippets = [
-`local Combat = {}
+        if (!("IntersectionObserver" in window)) {
+          videos.forEach(load);
+          return;
+        }
+
+        observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) load(entry.target);
+            });
+          },
+          { rootMargin: "300px 0px" },
+        );
+        videos.forEach((video) => observer.observe(video));
+      })();
+
+      // animated code columns that change with scroll
+      (() => {
+        const snippets = [
+          `local Combat = {}
 Combat.__index = Combat
 
 function Combat.new(cfg)
@@ -883,7 +2012,7 @@ function Combat:swing(player, dir)
   if hit then self:applyDamage(hit) end
   self.combo += 1
 end`,
-`local Grapple = {}
+          `local Grapple = {}
 
 function Grapple:fire(origin, target)
   local dir = (target - origin).Unit
@@ -898,7 +2027,7 @@ function Grapple:update(dt)
   self.velocity *= (1 - self.drag * dt)
   self.root.CFrame += self.velocity * dt
 end`,
-`local Profile = DataStore:load(player)
+          `local Profile = DataStore:load(player)
 
 local function save(plr, data)
   local ok, err = pcall(function()
@@ -912,7 +2041,7 @@ end
 Players.PlayerRemoving:Connect(function(plr)
   save(plr, Profile:get(plr))
 end)`,
-`local Remote = ReplicatedStorage.Combat
+          `local Remote = ReplicatedStorage.Combat
 
 Remote.OnServerEvent:Connect(function(plr, action)
   if not validate(plr, action) then
@@ -924,7 +2053,7 @@ Remote.OnServerEvent:Connect(function(plr, action)
 end)
 
 -- server is always the source of truth`,
-`local Round = {}
+          `local Round = {}
 
 function Round:start(players)
   self.clock = 180
@@ -937,7 +2066,7 @@ function Round:finish(reason)
   Rewards:grant(self.alive, reason)
   Matchmaking:queueNext()
 end`,
-`local Ability = {}
+          `local Ability = {}
 
 function Ability:canCast(plr)
   if Cooldowns:active(plr, self.id) then return false end
@@ -949,7 +2078,7 @@ function Ability:cast(plr, target)
   Energy:spend(plr, self.cost)
   Effects:replicate("dash", plr, target)
 end`,
-`local Shop = {}
+          `local Shop = {}
 
 function Shop:buy(plr, itemId)
   local item = Catalog[itemId]
@@ -959,7 +2088,7 @@ function Shop:buy(plr, itemId)
   Inventory:add(plr, itemId)
   return true
 end`,
-`local UI = {}
+          `local UI = {}
 
 function UI:bind(button, action)
   button.MouseEnter:Connect(function()
@@ -970,38 +2099,68 @@ end
 
 function UI:setHud(state)
   self.hud.Visible = state ~= "menu"
-end`
-      ];
+end`,
+        ];
 
-      const field = document.querySelector(".codefield");
-      const cols = Array.from(document.querySelectorAll(".code-col"));
-      let activeOffset = -1;
+        const field = document.querySelector(".codefield");
+        const cols = Array.from(document.querySelectorAll(".code-col"));
+        let activeOffset = -1;
 
-      const markup = (raw) => {
-        let esc = raw.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-        esc = esc.replace(/\b(local|function|end|if|then|return|not|for|do|self|false|true)\b/g, '<span class="kw">$1</span>');
-        esc = esc.replace(/([A-Za-z_]+):(\w+)/g, '$1:<span class="fn">$2</span>');
-        return esc + "\\n\\n" + esc;
-      };
+        const highlight = (raw) => {
+          const fragment = document.createDocumentFragment();
+          const token =
+            /\b(local|function|end|if|then|return|not|for|do|self|false|true)\b|([A-Za-z_]+):(\w+)/g;
+          let cursor = 0;
+          raw.replace(token, (match, keyword, receiver, method, offset) => {
+            if (offset > cursor)
+              fragment.append(
+                document.createTextNode(raw.slice(cursor, offset)),
+              );
+            if (keyword) {
+              const span = document.createElement("span");
+              span.className = "kw";
+              span.textContent = keyword;
+              fragment.append(span);
+            } else {
+              fragment.append(document.createTextNode(`${receiver}:`));
+              const span = document.createElement("span");
+              span.className = "fn";
+              span.textContent = method;
+              fragment.append(span);
+            }
+            cursor = offset + match.length;
+            return match;
+          });
+          if (cursor < raw.length)
+            fragment.append(document.createTextNode(raw.slice(cursor)));
+          return fragment;
+        };
 
-      const paint = (offset) => {
-        cols.forEach((col, i) => {
-          col.innerHTML = markup(snippets[(i + offset) % snippets.length]);
-        });
-      };
+        const paint = (offset) => {
+          cols.forEach((col, i) => {
+            const snippet = snippets[(i + offset) % snippets.length];
+            const fragment = document.createDocumentFragment();
+            fragment.append(
+              highlight(snippet),
+              document.createTextNode("\n\n"),
+              highlight(snippet),
+            );
+            col.replaceChildren(fragment);
+          });
+        };
 
-      const update = () => {
-        field.style.transform = `translate3d(0, ${scrollY * -.045}px, 0)`;
-        const offset = Math.floor(scrollY / 520) % snippets.length;
-        if (offset !== activeOffset) {
-          activeOffset = offset;
-          paint(offset);
-        }
-      };
+        const update = () => {
+          field.style.transform = `translate3d(0, ${scrollY * -0.045}px, 0)`;
+          const offset = Math.floor(scrollY / 520) % snippets.length;
+          if (offset !== activeOffset) {
+            activeOffset = offset;
+            paint(offset);
+          }
+        };
 
-      update();
-      addEventListener("scroll", update, { passive: true });
-    })();
-  </script>
-</body>
+        update();
+        addEventListener("scroll", update, { passive: true });
+      })();
+    </script>
+  </body>
 </html>
