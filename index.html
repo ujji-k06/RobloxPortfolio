@@ -9,10 +9,16 @@
       content="ujji_k06 — a Roblox Luau developer building the systems behind good games: gameplay, combat, movement, data, economy, UI, networking, and reusable frameworks."
     />
     <title>ujji_k06 — Roblox Luau Developer</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.185.1/build/three.module.js"
+        }
+      }
+    </script>
     <style>
       :root {
         --bg: #08090f;
-        --bg-2: #0d0f1a;
         --surface: #12141f;
         --surface-2: #171a27;
         --text: #e7ebf5;
@@ -23,7 +29,6 @@
         --accent-3: #7aa2ff;
         --line: rgba(255, 255, 255, 0.08);
         --line-2: rgba(255, 255, 255, 0.14);
-        --glow: color-mix(in srgb, var(--accent) 40%, transparent);
         --shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
         --r: 16px;
         --r-sm: 11px;
@@ -41,7 +46,6 @@
 
       html[data-theme="light"] {
         --bg: #eef0f5;
-        --bg-2: #e6e9f1;
         --surface: #ffffff;
         --surface-2: #f4f6fb;
         --text: #0e1020;
@@ -71,18 +75,7 @@
         min-width: 320px;
         overflow-x: hidden;
         color: var(--text);
-        background:
-          radial-gradient(
-            120% 90% at 78% -10%,
-            color-mix(in srgb, var(--accent) 16%, transparent),
-            transparent 45%
-          ),
-          radial-gradient(
-            90% 80% at 6% 28%,
-            color-mix(in srgb, var(--accent-3) 14%, transparent),
-            transparent 52%
-          ),
-          linear-gradient(180deg, var(--bg), var(--bg-2) 48%, var(--bg));
+        background: var(--bg);
         background-attachment: fixed;
         font-family: var(--font);
         line-height: 1.55;
@@ -102,6 +95,20 @@
         pointer-events: none;
       }
 
+      .webgl {
+        width: 100%;
+        height: 100%;
+        display: block;
+        opacity: 0;
+        transition: opacity 2s var(--ease);
+      }
+      .webgl.on {
+        opacity: 1;
+      }
+      html[data-theme="light"] .webgl.on {
+        opacity: 0.3;
+      }
+
       .grid-layer {
         z-index: 0;
         background-image:
@@ -119,52 +126,6 @@
           transparent 75%
         );
         opacity: 0.6;
-      }
-
-      .aurora {
-        z-index: 0;
-        overflow: hidden;
-      }
-      .aurora::before,
-      .aurora::after {
-        content: "";
-        position: absolute;
-        width: 60vw;
-        height: 60vw;
-        border-radius: 50%;
-        filter: blur(90px);
-        opacity: 0.5;
-        will-change: transform;
-      }
-      .aurora::before {
-        top: -18vw;
-        right: -10vw;
-        background: radial-gradient(
-          circle,
-          color-mix(in srgb, var(--accent) 60%, transparent),
-          transparent 62%
-        );
-        animation: drift1 26s var(--ease) infinite alternate;
-      }
-      .aurora::after {
-        top: 34vh;
-        left: -14vw;
-        background: radial-gradient(
-          circle,
-          color-mix(in srgb, var(--accent-3) 52%, transparent),
-          transparent 62%
-        );
-        animation: drift2 32s var(--ease) infinite alternate;
-      }
-      @keyframes drift1 {
-        to {
-          transform: translate3d(-8vw, 12vh, 0) scale(1.15);
-        }
-      }
-      @keyframes drift2 {
-        to {
-          transform: translate3d(10vw, -8vh, 0) scale(1.2);
-        }
       }
 
       /* animated lines of code */
@@ -390,6 +351,82 @@
         box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
       }
 
+      /* mobile menu */
+      .nav-burger {
+        display: none;
+        width: 2.6rem;
+        height: 2.6rem;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        background: color-mix(in srgb, var(--surface) 60%, transparent);
+        cursor: pointer;
+      }
+      .nav-burger-box,
+      .nav-burger-box::before,
+      .nav-burger-box::after {
+        content: "";
+        display: block;
+        width: 1.1rem;
+        height: 1.5px;
+        margin: 0 auto;
+        background: var(--text);
+        transition: transform 0.25s var(--ease), opacity 0.25s;
+      }
+      .nav-burger-box {
+        position: relative;
+        top: calc(50% - 1px);
+      }
+      .nav-burger-box::before {
+        position: absolute;
+        top: -5px;
+      }
+      .nav-burger-box::after {
+        position: absolute;
+        top: 5px;
+      }
+      .nav-burger[aria-expanded="true"] .nav-burger-box::before {
+        transform: translateY(5px) rotate(45deg);
+      }
+      .nav-burger[aria-expanded="true"] .nav-burger-box::after {
+        transform: translateY(-5px) rotate(-45deg);
+      }
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      .nav-menu {
+        position: fixed;
+        inset: 74px 0 auto 0;
+        z-index: 29;
+        display: none;
+        border-bottom: 1px solid var(--line);
+        background: color-mix(in srgb, var(--bg) 88%, transparent);
+        backdrop-filter: blur(20px) saturate(1.4);
+      }
+      .nav-menu.open {
+        display: block;
+      }
+      .nav-menu-links {
+        display: grid;
+        gap: 0.25rem;
+        padding: 1rem 0 1.4rem;
+      }
+      .nav-menu-links a {
+        padding: 0.7rem 0.35rem;
+        border-radius: var(--r-sm);
+        font-family: var(--display);
+        font-size: 1.15rem;
+        font-weight: 550;
+        letter-spacing: -0.015em;
+      }
+      .nav-menu-links a:hover {
+        background: color-mix(in srgb, var(--surface) 70%, transparent);
+      }
+
       /* ---------------- layout ---------------- */
       main {
         position: relative;
@@ -434,15 +471,7 @@
         margin: 0;
       }
       .grad {
-        background: linear-gradient(
-          100deg,
-          var(--accent),
-          var(--accent-2) 60%,
-          var(--accent-3)
-        );
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        color: var(--accent);
       }
 
       /* ---------------- hero ---------------- */
@@ -541,16 +570,12 @@
       }
       .btn.primary {
         border-color: transparent;
-        background: linear-gradient(
-          120deg,
-          var(--accent),
-          color-mix(in srgb, var(--accent) 60%, var(--accent-2))
-        );
+        background: var(--accent);
         color: #fff;
-        box-shadow: 0 12px 30px -8px var(--glow);
+        box-shadow: none;
       }
       .btn.primary:hover {
-        box-shadow: 0 18px 40px -8px var(--glow);
+        filter: brightness(1.08);
       }
 
       .hero-metrics {
@@ -1012,24 +1037,6 @@
       .cell.wide {
         grid-column: span 2;
       }
-      .cell::after {
-        content: "";
-        position: absolute;
-        right: -30%;
-        top: -30%;
-        width: 60%;
-        height: 120%;
-        background: radial-gradient(
-          circle,
-          color-mix(in srgb, var(--accent) 20%, transparent),
-          transparent 70%
-        );
-        opacity: 0;
-        transition: opacity 0.3s;
-      }
-      .cell:hover::after {
-        opacity: 1;
-      }
 
       /* ---------------- contact ---------------- */
       .contact-panel {
@@ -1037,13 +1044,7 @@
         overflow: hidden;
         border: 1px solid var(--line-2);
         border-radius: calc(var(--r) + 6px);
-        background:
-          radial-gradient(
-            90% 140% at 100% 0%,
-            color-mix(in srgb, var(--accent) 20%, transparent),
-            transparent 55%
-          ),
-          color-mix(in srgb, var(--surface) 78%, transparent);
+        background: color-mix(in srgb, var(--surface) 78%, transparent);
         padding: clamp(2rem, 5vw, 4rem);
         text-align: center;
       }
@@ -1086,19 +1087,19 @@
         font-size: 1rem;
       }
       .btn.roblox-social {
-        border-color: rgba(255, 255, 255, 0.72);
-        background: #fff;
-        color: #07090f;
-        box-shadow: 0 16px 36px -18px rgba(255, 255, 255, 0.95);
+        border-color: var(--line-2);
+        background: color-mix(in srgb, var(--surface) 90%, transparent);
+        color: var(--text);
+        box-shadow: none;
       }
       .btn.roblox-social small {
-        color: rgba(7, 9, 15, 0.62);
+        color: var(--muted);
       }
       .btn.discord-social {
-        border-color: rgba(88, 101, 242, 0.68);
-        background: linear-gradient(135deg, #6f7cff, #5865f2 58%, #4752c4);
+        border-color: transparent;
+        background: #5865f2;
         color: #fff;
-        box-shadow: 0 16px 38px -18px rgba(88, 101, 242, 0.95);
+        box-shadow: none;
       }
       .btn.discord-social small {
         color: rgba(255, 255, 255, 0.76);
@@ -1179,6 +1180,9 @@
         .nav-links {
           display: none;
         }
+        .nav-burger {
+          display: block;
+        }
         .section-head,
         .about-grid,
         .card.featured {
@@ -1223,8 +1227,8 @@
     </style>
   </head>
   <body>
+    <canvas class="bg-layer webgl" aria-hidden="true"></canvas>
     <div class="bg-layer grid-layer" aria-hidden="true"></div>
-    <div class="bg-layer aurora" aria-hidden="true"></div>
     <div class="bg-layer codefield" aria-hidden="true">
       <pre class="code-col"></pre>
       <pre class="code-col"></pre>
@@ -1263,9 +1267,22 @@
             ><span data-theme-label>Light Mode</span>
           </button>
           <a class="nav-cta" href="#contact">Contact me</a>
+          <a class="nav-burger" href="#nav-menu" aria-expanded="false">
+            <span class="nav-burger-box" aria-hidden="true"></span>
+            <span class="visually-hidden">Open menu</span>
+          </a>
         </div>
       </nav>
     </header>
+
+    <div class="nav-menu" id="nav-menu">
+      <nav class="wrap nav-menu-links" aria-label="Mobile">
+        <a href="#work">Work</a>
+        <a href="#clips">Clips</a>
+        <a href="#about">About</a>
+        <a href="#specialties">Specialties</a>
+      </nav>
+    </div>
 
     <main id="top">
       <!-- HERO -->
@@ -1277,7 +1294,8 @@
           >
           <h1 id="hero-title">
             Roblox developer<br />
-            for hire with <span class="grad">5+ years of experience.</span>
+            for hire, specialising in
+            <span class="grad">full-stack Luau.</span>
           </h1>
           <p class="hero-lead">
             Hi! I'm Ujji — a Roblox programmer with 5+ years of coding
@@ -1296,10 +1314,10 @@
               <strong>2022</strong><span>Building on Roblox</span>
             </div>
             <div class="metric">
-              <strong>Full-stack</strong><span>Luau systems</span>
+              <strong>4</strong><span>Live experiences</span>
             </div>
             <div class="metric">
-              <strong>Frameworks</strong><span>Reusable &amp; readable</span>
+              <strong>Full-stack</strong><span>Luau systems</span>
             </div>
           </div>
         </div>
@@ -1533,6 +1551,7 @@
                     playsinline
                     data-lazy-video
                     aria-label="Combat System 1 video"
+                    poster="videos/CombatSystem1.jpg"
                   >
                     <source
                       data-src="videos/CombatSystem1.mp4"
@@ -1551,6 +1570,7 @@
                     playsinline
                     data-lazy-video
                     aria-label="Combat System 2 [W.I.P] video"
+                    poster="videos/CombatSystem2[W.I.P].jpg"
                   >
                     <source
                       data-src="videos/CombatSystem2[W.I.P].mp4"
@@ -1579,6 +1599,7 @@
                     playsinline
                     data-lazy-video
                     aria-label="UI Showcase 2 video"
+                    poster="videos/UIShowcase2.jpg"
                   >
                     <source
                       data-src="videos/UIShowcase2.mp4"
@@ -1597,6 +1618,7 @@
                     playsinline
                     data-lazy-video
                     aria-label="UI Showcase video"
+                    poster="videos/UIShowcase.jpg"
                   >
                     <source data-src="videos/UIShowcase.mp4" type="video/mp4" />
                   </video>
@@ -1622,6 +1644,7 @@
                     playsinline
                     data-lazy-video
                     aria-label="ODM Gear Showcase video"
+                    poster="videos/ODMGearShowcase.jpg"
                   >
                     <source
                       data-src="videos/ODMGearShowcase.mp4"
@@ -1640,6 +1663,7 @@
                     playsinline
                     data-lazy-video
                     aria-label="Grappling System video"
+                    poster="videos/GrapplingSystem.jpg"
                   >
                     <source
                       data-src="videos/GrapplingSystem.mp4"
@@ -1668,6 +1692,7 @@
                     playsinline
                     data-lazy-video
                     aria-label="Roller Coaster video"
+                    poster="videos/RollerCoaster.jpg"
                   >
                     <source
                       data-src="videos/RollerCoaster.mp4"
@@ -1686,6 +1711,7 @@
                     playsinline
                     data-lazy-video
                     aria-label="Carousel [Unfinished] video"
+                    poster="videos/Carousel [Unfinished].jpg"
                   >
                     <source
                       data-src="videos/Carousel [Unfinished].mp4"
@@ -1829,7 +1855,7 @@
             </a>
             <a
               class="btn social discord-social"
-              href="https://discord.com/"
+              href="https://discord.com/users/1289729295178264616"
               target="_blank"
               rel="noopener"
               aria-label="Discord: .ujji"
@@ -1888,6 +1914,19 @@
           header.classList.toggle("scrolled", window.scrollY > 12);
         onScroll();
         addEventListener("scroll", onScroll, { passive: true });
+      })();
+
+      // Mobile nav toggle
+      (() => {
+        const burger = document.querySelector(".nav-burger");
+        const menu = document.getElementById("nav-menu");
+        burger.addEventListener("click", () => {
+          const open = menu.classList.toggle("open");
+          burger.setAttribute("aria-expanded", String(open));
+          burger.querySelector(".visually-hidden").textContent = open
+            ? "Close menu"
+            : "Open menu";
+        });
       })();
 
       // smooth same-page links in every browser
@@ -2178,6 +2217,124 @@ end`,
 
         update();
         addEventListener("scroll", update, { passive: true });
+      })();
+    </script>
+
+    <script type="module">
+      // Ambient wireframe terrain — a quiet nod to the Roblox baseplate.
+      // Flat line-work in the site's own accent colour; falls back to the
+      // plain CSS background if WebGL or the CDN is unavailable.
+      (() => {
+        const canvas = document.querySelector(".webgl");
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (
+          !canvas ||
+          typeof WebGLRenderingContext === "undefined"
+        )
+          return;
+
+        import("three")
+          .then((THREE) => {
+            let renderer;
+            try {
+              renderer = new THREE.WebGLRenderer({
+                canvas,
+                alpha: true,
+                antialias: true,
+                powerPreference: "low-power",
+              });
+            } catch {
+              return;
+            }
+            renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(
+              55,
+              innerWidth / innerHeight,
+              0.1,
+              80,
+            );
+            camera.position.set(0, 3.4, 13);
+            camera.lookAt(0, -0.6, 0);
+
+            const geometry = new THREE.PlaneGeometry(52, 30, 72, 40);
+            geometry.rotateX(-Math.PI / 2);
+
+            const material = new THREE.MeshBasicMaterial({
+              wireframe: true,
+              transparent: true,
+              opacity: 0.25,
+              depthWrite: false,
+            });
+            const terrain = new THREE.Mesh(geometry, material);
+            terrain.position.y = -2.2;
+            scene.add(terrain);
+
+            // Follow the site palette when the theme toggles.
+            const palette = { dark: "#7aa2ff", light: "#2f52ff" };
+            const syncColor = () =>
+              material.color.set(
+                palette[document.documentElement.dataset.theme] ||
+                  palette.dark,
+              );
+            syncColor();
+            new MutationObserver(syncColor).observe(
+              document.documentElement,
+              { attributes: true, attributeFilter: ["data-theme"] },
+            );
+
+            const resize = () => {
+              renderer.setSize(innerWidth, innerHeight);
+              camera.aspect = innerWidth / innerHeight;
+              camera.updateProjectionMatrix();
+            };
+            resize();
+            addEventListener("resize", resize);
+
+            const targetX = { v: 0 };
+            addEventListener("pointermove", (e) => {
+              targetX.v = (e.clientX / innerWidth - 0.5) * 1.2;
+            });
+
+            const position = geometry.attributes.position;
+            const base = Float32Array.from(position.array);
+            const wave = (t) => {
+              for (let i = 0; i < position.count; i++) {
+                const x = base[i * 3];
+                const z = base[i * 3 + 2];
+                position.array[i * 3 + 1] =
+                  Math.sin(x * 0.32 + t * 0.7) * 0.42 +
+                  Math.cos(z * 0.24 + t * 0.5) * 0.38;
+              }
+              position.needsUpdate = true;
+            };
+
+            let visible = true;
+            document.addEventListener("visibilitychange", () => {
+              visible = !document.hidden;
+            });
+
+            const clock = new THREE.Clock();
+            const renderFrame = () => {
+              const t = clock.getElapsedTime();
+              wave(t * 0.6);
+              terrain.position.y = -2.2 + scrollY * 0.0009;
+              camera.position.x += (targetX.v - camera.position.x) * 0.04;
+              renderer.render(scene, camera);
+            };
+
+            if (reduced) {
+              renderFrame(); // one calm static frame
+            } else {
+              renderer.setAnimationLoop(() => {
+                if (visible) renderFrame();
+              });
+            }
+
+            canvas.classList.add("on");
+          })
+          .catch(() => {});
       })();
     </script>
   </body>
