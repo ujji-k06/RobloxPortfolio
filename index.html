@@ -907,71 +907,53 @@
       }
 
       /* ---------------- clips ---------------- */
-      .clip-groups {
-        display: grid;
-        gap: 1rem;
-      }
-      .clip-group {
-        overflow: hidden;
-        border: 1px solid var(--line);
-        border-radius: calc(var(--r) + 2px);
-        background: color-mix(in srgb, var(--surface) 52%, transparent);
-        transition:
-          border-color 0.25s,
-          background 0.25s;
-      }
-      .clip-group[open] {
-        border-color: var(--line-2);
-        background: color-mix(in srgb, var(--surface) 68%, transparent);
-      }
-      .clip-group summary {
+      .clip-filter {
         display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-        padding: 1.15rem 1.35rem;
-        cursor: pointer;
-        list-style: none;
-        user-select: none;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-bottom: 1.6rem;
       }
-      .clip-group summary::-webkit-details-marker {
-        display: none;
-      }
-      .clip-group summary::after {
-        content: "+";
-        flex: 0 0 auto;
-        color: var(--accent);
-        font-family: var(--mono);
-        font-size: 1.25rem;
-        line-height: 1;
-        transition: transform 0.25s var(--ease);
-      }
-      .clip-group[open] summary::after {
-        transform: rotate(45deg);
-      }
-      .clip-group-title {
-        display: flex;
+      .clip-filter-btn {
+        appearance: none;
+        display: inline-flex;
         align-items: baseline;
-        gap: 0.75rem;
-        min-width: 0;
-      }
-      .clip-group-title strong {
-        font-family: var(--display);
-        font-size: clamp(1.15rem, 2vw, 1.5rem);
-        font-weight: 400;
-        letter-spacing: 0.02em;
-        text-transform: uppercase;
-      }
-      .clip-group-count {
-        color: var(--faint);
+        gap: 0.5rem;
+        padding: 0.62rem 1rem;
+        border: 1px solid var(--line);
+        border-radius: var(--r-sm);
+        background: color-mix(in srgb, var(--surface) 52%, transparent);
+        color: var(--muted);
         font-family: var(--mono);
         font-size: 0.72rem;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.07em;
         text-transform: uppercase;
-        white-space: nowrap;
+        cursor: pointer;
+        transition:
+          border-color 0.25s,
+          color 0.25s,
+          background 0.25s;
       }
-      .clip-group .clip-grid {
-        padding: 0 1rem 1rem;
+      .clip-filter-btn:hover {
+        border-color: var(--line-2);
+        color: var(--text);
+      }
+      .clip-filter-btn:focus-visible {
+        outline: 1px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .clip-filter-btn.is-active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 9%, transparent);
+      }
+      .clip-filter-count {
+        color: var(--faint);
+        font-size: 0.62rem;
+        letter-spacing: 0.04em;
+      }
+      .clip-filter-btn.is-active .clip-filter-count {
+        color: var(--accent-2);
       }
       .clip-grid {
         display: grid;
@@ -1009,18 +991,173 @@
         aspect-ratio: 16 / 9;
         object-fit: cover;
         background: #0a0c12;
+        filter: blur(18px) brightness(0.85);
+        transform: scale(1.12);
+        transition:
+          filter 0.45s var(--ease),
+          transform 0.45s var(--ease);
+      }
+      .clip-card.is-open .clip-media video {
+        filter: none;
+        transform: none;
+      }
+      .clip-play {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 0.7rem;
+        padding: 0;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+      }
+      .clip-card.is-open .clip-play {
+        display: none;
+      }
+      .clip-play-icon {
+        display: grid;
+        place-items: center;
+        width: clamp(58px, 7vw, 78px);
+        aspect-ratio: 1;
+        color: var(--text);
+        border: 1px solid var(--line-2);
+        background: color-mix(in srgb, var(--surface) 62%, transparent);
+        backdrop-filter: blur(10px);
+        clip-path: polygon(
+          10px 0,
+          100% 0,
+          100% calc(100% - 10px),
+          calc(100% - 10px) 100%,
+          0 100%,
+          0 10px
+        );
+        transition:
+          color 0.25s,
+          border-color 0.25s,
+          background 0.25s,
+          transform 0.25s var(--ease);
+      }
+      .clip-play:hover .clip-play-icon,
+      .clip-play:focus-visible .clip-play-icon {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+        transform: scale(1.07);
+      }
+      .clip-play svg {
+        width: 36%;
+        margin-left: 7%;
+        fill: currentColor;
+      }
+      .clip-play-label {
+        color: var(--muted);
+        font-family: var(--mono);
+        font-size: 0.62rem;
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        transition: color 0.25s;
+      }
+      .clip-play:hover .clip-play-label,
+      .clip-play:focus-visible .clip-play-label {
+        color: var(--text);
+      }
+      .clip-close {
+        position: absolute;
+        top: 0.7rem;
+        right: 0.7rem;
+        z-index: 3;
+        display: none;
+        place-items: center;
+        width: 2.1rem;
+        height: 2.1rem;
+        padding: 0;
+        border: 1px solid var(--line-2);
+        background: color-mix(in srgb, var(--surface) 72%, transparent);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 0.85rem;
+        line-height: 1;
+        cursor: pointer;
+        clip-path: polygon(
+          7px 0,
+          100% 0,
+          100% calc(100% - 7px),
+          calc(100% - 7px) 100%,
+          0 100%,
+          0 7px
+        );
+        transition:
+          color 0.25s,
+          border-color 0.25s,
+          background 0.25s;
+      }
+      .clip-card.is-spotlit .clip-close {
+        display: grid;
+      }
+      .clip-close:hover,
+      .clip-close:focus-visible {
+        color: var(--accent);
+        border-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 14%, transparent);
+      }
+      .clip-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 70;
+        background: color-mix(in srgb, var(--bg) 58%, transparent);
+        backdrop-filter: blur(9px);
+        opacity: 0;
+        visibility: hidden;
+        transition:
+          opacity 0.35s var(--ease),
+          visibility 0.35s;
+      }
+      html.clip-spotlit {
+        overflow: hidden;
+      }
+      html.clip-spotlit .clip-backdrop {
+        opacity: 1;
+        visibility: visible;
+      }
+      .clip-card.is-spotlit {
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        translate: -50% -50%;
+        z-index: 80;
+        width: min(1040px, 94vw);
+        margin: 0;
+      }
+      .clip-card.is-spotlit:hover {
+        transform: none;
+      }
+      .clip-card.is-spotlit .clip-media video {
+        aspect-ratio: 16 / 9;
       }
       .clip-body {
-        padding: clamp(1rem, 1.8vw, 1.35rem);
+        padding: clamp(0.3rem, 0.65vw, 0.42rem) clamp(1rem, 1.8vw, 1.35rem);
       }
       .clip-card h3 {
-        font-size: clamp(1.12rem, 1.8vw, 1.55rem);
+        font-family: var(--display);
+        font-size: clamp(1.05rem, 1.7vw, 1.4rem);
         font-weight: 400;
-        letter-spacing: 0.02em;
-        line-height: 1.1;
+        letter-spacing: 0.035em;
+        line-height: 1.3;
+        text-transform: uppercase;
+        color: var(--text);
         overflow-wrap: anywhere;
         word-break: break-word;
         hyphens: auto;
+        transition: text-shadow 0.3s;
+      }
+      .clip-card:hover h3 {
+        text-shadow: 0 0 24px color-mix(in srgb, var(--accent) 50%, transparent);
+      }
+      .clip-card[hidden] {
+        display: none;
       }
 
       /* ---------------- about ---------------- */
@@ -1531,199 +1668,166 @@
             <p class="eyebrow">Video clips</p>
             <h2 id="clips-title">A few clips saved from my projects.</h2>
           </div>
-          <p>Open a category to browse clips by the systems they show.</p>
+          <p>Pick a category to browse clips by the systems they show.</p>
         </div>
 
-        <div class="clip-groups">
-          <details class="clip-group" open>
-            <summary>
-              <span class="clip-group-title">
-                <strong>Combat Systems</strong>
-                <span class="clip-group-count">2 clips</span>
-              </span>
-            </summary>
-            <div class="clip-grid">
-              <article class="clip-card reveal">
-                <div class="clip-media">
-                  <video
-                    controls
-                    preload="none"
-                    playsinline
-                    data-lazy-video
-                    aria-label="Combat System 1 video"
-                    poster="videos/CombatSystem1.jpg"
-                  >
-                    <source
-                      data-src="videos/CombatSystem1.mp4"
-                      type="video/mp4"
-                    />
-                  </video>
-                </div>
-                <div class="clip-body"><h3>Combat System 1</h3></div>
-              </article>
-
-              <article class="clip-card reveal">
-                <div class="clip-media">
-                  <video
-                    controls
-                    preload="none"
-                    playsinline
-                    data-lazy-video
-                    aria-label="Combat System 2 [W.I.P] video"
-                    poster="videos/CombatSystem2[W.I.P].jpg"
-                  >
-                    <source
-                      data-src="videos/CombatSystem2[W.I.P].mp4"
-                      type="video/mp4"
-                    />
-                  </video>
-                </div>
-                <div class="clip-body"><h3>Combat System 2 [W.I.P]</h3></div>
-              </article>
-            </div>
-          </details>
-
-          <details class="clip-group">
-            <summary>
-              <span class="clip-group-title">
-                <strong>UI/UX</strong>
-                <span class="clip-group-count">2 clips</span>
-              </span>
-            </summary>
-            <div class="clip-grid">
-              <article class="clip-card reveal">
-                <div class="clip-media">
-                  <video
-                    controls
-                    preload="none"
-                    playsinline
-                    data-lazy-video
-                    aria-label="UI Showcase 2 video"
-                    poster="videos/UIShowcase2.jpg"
-                  >
-                    <source
-                      data-src="videos/UIShowcase2.mp4"
-                      type="video/mp4"
-                    />
-                  </video>
-                </div>
-                <div class="clip-body"><h3>UI Showcase 2</h3></div>
-              </article>
-
-              <article class="clip-card reveal">
-                <div class="clip-media">
-                  <video
-                    controls
-                    preload="none"
-                    playsinline
-                    data-lazy-video
-                    aria-label="UI Showcase video"
-                    poster="videos/UIShowcase.jpg"
-                  >
-                    <source data-src="videos/UIShowcase.mp4" type="video/mp4" />
-                  </video>
-                </div>
-                <div class="clip-body"><h3>UI Showcase</h3></div>
-              </article>
-            </div>
-          </details>
-
-          <details class="clip-group">
-            <summary>
-              <span class="clip-group-title">
-                <strong>Miscellaneous</strong>
-                <span class="clip-group-count">2 clips</span>
-              </span>
-            </summary>
-            <div class="clip-grid">
-              <article class="clip-card reveal">
-                <div class="clip-media">
-                  <video
-                    controls
-                    preload="none"
-                    playsinline
-                    data-lazy-video
-                    aria-label="ODM Gear Showcase video"
-                    poster="videos/ODMGearShowcase.jpg"
-                  >
-                    <source
-                      data-src="videos/ODMGearShowcase.mp4"
-                      type="video/mp4"
-                    />
-                  </video>
-                </div>
-                <div class="clip-body"><h3>ODM Gear Showcase</h3></div>
-              </article>
-
-              <article class="clip-card reveal">
-                <div class="clip-media">
-                  <video
-                    controls
-                    preload="none"
-                    playsinline
-                    data-lazy-video
-                    aria-label="Grappling System video"
-                    poster="videos/GrapplingSystem.jpg"
-                  >
-                    <source
-                      data-src="videos/GrapplingSystem.mp4"
-                      type="video/mp4"
-                    />
-                  </video>
-                </div>
-                <div class="clip-body"><h3>Grappling System</h3></div>
-              </article>
-            </div>
-          </details>
-
-          <details class="clip-group">
-            <summary>
-              <span class="clip-group-title">
-                <strong>Amusement Rides</strong>
-                <span class="clip-group-count">2 clips</span>
-              </span>
-            </summary>
-            <div class="clip-grid">
-              <article class="clip-card reveal">
-                <div class="clip-media">
-                  <video
-                    controls
-                    preload="none"
-                    playsinline
-                    data-lazy-video
-                    aria-label="Roller Coaster video"
-                    poster="videos/RollerCoaster.jpg"
-                  >
-                    <source
-                      data-src="videos/RollerCoaster.mp4"
-                      type="video/mp4"
-                    />
-                  </video>
-                </div>
-                <div class="clip-body"><h3>Roller Coaster</h3></div>
-              </article>
-
-              <article class="clip-card reveal">
-                <div class="clip-media">
-                  <video
-                    controls
-                    preload="none"
-                    playsinline
-                    data-lazy-video
-                    aria-label="Carousel [Unfinished] video"
-                    poster="videos/Carousel [Unfinished].jpg"
-                  >
-                    <source
-                      data-src="videos/Carousel [Unfinished].mp4"
-                      type="video/mp4"
-                    />
-                  </video>
-                </div>
-                <div class="clip-body"><h3>Carousel [Unfinished]</h3></div>
-              </article>
-            </div>
-          </details>
+        <div
+          class="clip-filter reveal"
+          role="group"
+          aria-label="Browse clips by category"
+        >
+          <button
+            class="clip-filter-btn is-active"
+            type="button"
+            data-filter="combat"
+            aria-pressed="true"
+          >
+            Combat Systems <span class="clip-filter-count"></span>
+          </button>
+          <button
+            class="clip-filter-btn"
+            type="button"
+            data-filter="ui"
+            aria-pressed="false"
+          >
+            UI/UX <span class="clip-filter-count"></span>
+          </button>
+          <button
+            class="clip-filter-btn"
+            type="button"
+            data-filter="misc"
+            aria-pressed="false"
+          >
+            Miscellaneous <span class="clip-filter-count"></span>
+          </button>
+          <button
+            class="clip-filter-btn"
+            type="button"
+            data-filter="rides"
+            aria-pressed="false"
+          >
+            Amusement Rides <span class="clip-filter-count"></span>
+          </button>
         </div>
+
+        <div class="clip-grid" id="clip-grid">
+          <article class="clip-card reveal" data-category="combat">
+            <div class="clip-media">
+              <video
+                controls
+                preload="none"
+                playsinline
+                data-lazy-video
+                aria-label="Combat System 1 video"
+                poster="videos/CombatSystem1.jpg"
+              >
+                <source data-src="videos/CombatSystem1.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="clip-body"><h3>Combat System 1</h3></div>
+          </article>
+
+          <article class="clip-card reveal" data-category="combat">
+            <div class="clip-media">
+              <video
+                controls
+                preload="none"
+                playsinline
+                data-lazy-video
+                aria-label="Combat System 2 [W.I.P] video"
+                poster="videos/CombatSystem2[W.I.P].jpg"
+              >
+                <source
+                  data-src="videos/CombatSystem2[W.I.P].mp4"
+                  type="video/mp4"
+                />
+              </video>
+            </div>
+            <div class="clip-body"><h3>Combat System 2 [W.I.P]</h3></div>
+          </article>
+
+          <article class="clip-card reveal" data-category="ui">
+            <div class="clip-media">
+              <video
+                controls
+                preload="none"
+                playsinline
+                data-lazy-video
+                aria-label="UI Showcase 2 video"
+                poster="videos/UIShowcase2.jpg"
+              >
+                <source data-src="videos/UIShowcase2.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="clip-body"><h3>UI Showcase 2</h3></div>
+          </article>
+
+          <article class="clip-card reveal" data-category="ui">
+            <div class="clip-media">
+              <video
+                controls
+                preload="none"
+                playsinline
+                data-lazy-video
+                aria-label="UI Showcase video"
+                poster="videos/UIShowcase.jpg"
+              >
+                <source data-src="videos/UIShowcase.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="clip-body"><h3>UI Showcase</h3></div>
+          </article>
+
+          <article class="clip-card reveal" data-category="misc">
+            <div class="clip-media">
+              <video
+                controls
+                preload="none"
+                playsinline
+                data-lazy-video
+                aria-label="ODM Gear Showcase video"
+                poster="videos/ODMGearShowcase.jpg"
+              >
+                <source data-src="videos/ODMGearShowcase.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="clip-body"><h3>ODM Gear Showcase</h3></div>
+          </article>
+
+          <article class="clip-card reveal" data-category="misc">
+            <div class="clip-media">
+              <video
+                controls
+                preload="none"
+                playsinline
+                data-lazy-video
+                aria-label="Grappling System video"
+                poster="videos/GrapplingSystem.jpg"
+              >
+                <source data-src="videos/GrapplingSystem.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="clip-body"><h3>Grappling System</h3></div>
+          </article>
+
+          <article class="clip-card reveal" data-category="rides">
+            <div class="clip-media">
+              <video
+                controls
+                preload="none"
+                playsinline
+                data-lazy-video
+                aria-label="Roller Coaster video"
+                poster="videos/RollerCoaster.jpg"
+              >
+                <source data-src="videos/RollerCoaster.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="clip-body"><h3>Roller Coaster</h3></div>
+          </article>
+        </div>
+
+        <div class="clip-backdrop" aria-hidden="true"></div>
       </section>
 
       <!-- CONTACT -->
@@ -1901,16 +2005,40 @@
         addEventListener("scroll", revealPassed, { passive: true });
       })();
 
-      // Keep the clip categories mutually exclusive while allowing all to close.
+      // Clip category filter: the bar above the grid picks which clips list.
       (() => {
-        const groups = document.querySelectorAll(".clip-group");
-        groups.forEach((group) => {
-          group.addEventListener("toggle", () => {
-            if (!group.open) return;
-            groups.forEach((other) => {
-              if (other !== group) other.open = false;
-            });
+        const bar = document.querySelector(".clip-filter");
+        const grid = document.getElementById("clip-grid");
+        if (!bar || !grid) return;
+        const cards = Array.from(grid.querySelectorAll(".clip-card"));
+
+        const applyFilter = (filter) => {
+          cards.forEach((card) => {
+            card.hidden = card.dataset.category !== filter;
           });
+        };
+
+        bar.querySelectorAll(".clip-filter-btn").forEach((btn) => {
+          const filter = btn.dataset.filter;
+          const shown = cards.filter(
+            (card) => card.dataset.category === filter,
+          ).length;
+          const count = btn.querySelector(".clip-filter-count");
+          if (count) count.textContent = String(shown).padStart(2, "0");
+        });
+
+        const initial = bar.querySelector(".clip-filter-btn.is-active");
+        if (initial) applyFilter(initial.dataset.filter);
+
+        bar.addEventListener("click", (event) => {
+          const btn = event.target.closest(".clip-filter-btn");
+          if (!btn) return;
+          bar.querySelectorAll(".clip-filter-btn").forEach((other) => {
+            const active = other === btn;
+            other.classList.toggle("is-active", active);
+            other.setAttribute("aria-pressed", String(active));
+          });
+          applyFilter(btn.dataset.filter);
         });
       })();
 
@@ -1943,6 +2071,115 @@
           { rootMargin: "300px 0px" },
         );
         videos.forEach((video) => observer.observe(video));
+      })();
+
+      // Clip player: clips idle blurred behind a centred play button; playing
+      // one expands it over a dimmed backdrop so the rest steps aside.
+      (() => {
+        const cards = Array.from(document.querySelectorAll(".clip-card"));
+        if (!cards.length) return;
+        const backdrop = document.querySelector(".clip-backdrop");
+        const ease = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+        // Animate the card between its grid slot and the spotlight pose.
+        const flip = (card, mutate) => {
+          const first = card.getBoundingClientRect();
+          mutate();
+          const last = card.getBoundingClientRect();
+          const dx = first.left - last.left;
+          const dy = first.top - last.top;
+          const scale = first.width / last.width;
+          if (!card.animate || (!dx && !dy && scale === 1)) return;
+          card.animate(
+            [
+              {
+                transform: `translate(${dx}px, ${dy}px) scale(${scale})`,
+                transformOrigin: "top left",
+              },
+              {
+                transform: "translate(0, 0) scale(1)",
+                transformOrigin: "top left",
+              },
+            ],
+            { duration: 420, easing: ease },
+          );
+        };
+
+        const open = (card) => {
+          if (card.classList.contains("is-spotlit")) return;
+          const current = document.querySelector(".clip-card.is-spotlit");
+          if (current) shut(current);
+          flip(card, () => {
+            card.classList.add("is-spotlit");
+            document.documentElement.classList.add("clip-spotlit");
+          });
+        };
+
+        const shut = (card) => {
+          if (!card.classList.contains("is-spotlit")) return;
+          flip(card, () => {
+            card.classList.remove("is-spotlit");
+            document.documentElement.classList.remove("clip-spotlit");
+          });
+          const video = card.querySelector("video");
+          if (video && !video.paused) video.pause();
+        };
+
+        cards.forEach((card) => {
+          const video = card.querySelector("video");
+          if (!video) return;
+          video.controls = false;
+
+          const label = (
+            video.getAttribute("aria-label") || "this clip"
+          ).replace(/ video$/, "");
+
+          const play = document.createElement("button");
+          play.className = "clip-play";
+          play.type = "button";
+          play.setAttribute("aria-label", `Play ${label}`);
+          play.innerHTML =
+            '<span class="clip-play-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></span><span class="clip-play-label">Play clip</span>';
+          card.querySelector(".clip-media").appendChild(play);
+
+          const close = document.createElement("button");
+          close.className = "clip-close";
+          close.type = "button";
+          close.setAttribute("aria-label", `Close ${label} player`);
+          close.textContent = "✕";
+          card.appendChild(close);
+
+          play.addEventListener("click", () => {
+            card.classList.add("is-open");
+            video.controls = true;
+            video.play();
+          });
+          close.addEventListener("click", () => shut(card));
+
+          video.addEventListener("play", () => {
+            cards.forEach((other) => {
+              if (other === card) return;
+              const v = other.querySelector("video");
+              if (v && !v.paused) v.pause();
+            });
+            open(card);
+          });
+          video.addEventListener("ended", () => {
+            card.classList.remove("is-open");
+            video.controls = false;
+            shut(card);
+          });
+        });
+
+        backdrop?.addEventListener("click", () => {
+          const spotlit = document.querySelector(".clip-card.is-spotlit");
+          if (spotlit) shut(spotlit);
+        });
+        addEventListener("keydown", (event) => {
+          if (event.key !== "Escape") return;
+          const spotlit = document.querySelector(".clip-card.is-spotlit");
+          if (spotlit) shut(spotlit);
+        });
       })();
 
       // Work carousel: three slots with the selected card overlapping
