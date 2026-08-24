@@ -692,14 +692,98 @@
         font-size: 1rem;
       }
 
-      /* ---------------- work ---------------- */
-      .work-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+      /* ---------------- work (card carousel) ---------------- */
+      .carousel-stage {
+        position: relative;
+        margin-top: 0.5rem;
+      }
+      .carousel-track {
+        position: relative;
+        height: 100%;
+      }
+      .carousel-track .card {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        width: min(38rem, 88vw);
+        transform: translateX(calc(-50% + var(--tx, 0px))) scale(var(--sc, 1));
+      }
+      .carousel-ready .card {
+        transition:
+          transform 0.45s var(--ease),
+          opacity 0.45s var(--ease),
+          filter 0.45s var(--ease);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .carousel-ready .card {
+          transition: none;
+        }
+      }
+      .card.is-active {
+        --tx: 0px;
+        --sc: 1;
+        z-index: 3;
+      }
+      .card.is-side {
+        --tx: calc(var(--dir, 1) * 72%);
+        --sc: 0.88;
+        z-index: 2;
+        filter: brightness(0.68) saturate(0.85);
+      }
+      .card.is-hidden {
+        --tx: calc(var(--dir, 1) * 108%);
+        --sc: 0.88;
+        z-index: 1;
+        opacity: 0;
+      }
+      .carousel-nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         gap: 1.1rem;
+        margin-top: 1.7rem;
+      }
+      .carousel-arrow {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.9rem;
+        height: 2.9rem;
+        border: 1px solid var(--line-2);
+        border-radius: var(--r-sm);
+        background: color-mix(in srgb, var(--surface) 60%, transparent);
+        color: var(--text);
+        font-family: var(--mono);
+        font-size: 1.05rem;
+        line-height: 1;
+        cursor: pointer;
+        clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        transition:
+          color 0.2s,
+          border-color 0.2s,
+          transform 0.2s var(--ease);
+      }
+      .carousel-arrow:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+        transform: translateY(-1px);
+      }
+      .carousel-count {
+        min-width: 4.6rem;
+        text-align: center;
+        font-family: var(--mono);
+        font-size: 0.74rem;
+        letter-spacing: 0.12em;
+        color: var(--faint);
+        font-variant-numeric: tabular-nums;
+      }
+      .carousel-count b {
+        color: var(--text);
+        font-weight: 600;
       }
       .card {
         position: relative;
+        min-height: 21rem;
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -729,57 +813,9 @@
         transform: rotate(90deg) translate(-100%, -100%) translateY(2px);
         z-index: 4;
       }
-      .card.featured {
-        grid-column: 1 / -1;
-        display: grid;
-        grid-template-columns: minmax(0, 1.1fr) minmax(19rem, 0.9fr);
-      }
       .card:hover {
-        transform: translateY(-6px);
         border-color: var(--line-2);
         background: color-mix(in srgb, var(--surface) 84%, transparent);
-      }
-      .card-media {
-        position: relative;
-        overflow: hidden;
-        background: #0a0c12;
-        min-height: 13rem;
-      }
-      .card.featured .card-media {
-        min-height: 24rem;
-      }
-      .card-media img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        aspect-ratio: 16/9;
-        transform: scale(1.02);
-        filter: saturate(0.82) contrast(1.06);
-        transition:
-          transform 0.5s var(--ease),
-          filter 0.5s;
-      }
-      .card:hover .card-media img {
-        transform: scale(1.07);
-        filter: saturate(1) contrast(1.02);
-      }
-      .card-media::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        pointer-events: none;
-        background: linear-gradient(
-          180deg,
-          rgba(11, 13, 19, 0.15),
-          rgba(11, 13, 19, 0.55)
-        );
-      }
-      .card.featured .card-media::after {
-        background: linear-gradient(
-          90deg,
-          rgba(11, 13, 19, 0.1),
-          rgba(11, 13, 19, 0.5)
-        );
       }
       .card-body {
         display: flex;
@@ -804,9 +840,6 @@
         overflow-wrap: anywhere;
         word-break: break-word;
         hyphens: auto;
-      }
-      .card.featured h3 {
-        font-size: clamp(1.8rem, 3vw, 2.8rem);
       }
       .card p {
         color: var(--muted);
@@ -1167,16 +1200,11 @@
           display: block;
         }
         .section-head,
-        .about-grid,
-        .card.featured {
+        .about-grid {
           grid-template-columns: 1fr;
         }
-        .work-grid,
         .clip-grid {
           grid-template-columns: 1fr;
-        }
-        .card.featured .card-media {
-          min-height: 15rem;
         }
       }
       @media (max-width: 560px) {
@@ -1360,161 +1388,135 @@
             welcome.
           </p>
         </div>
+      </section>
 
-        <div class="work-grid">
-          <article class="card featured reveal">
-            <div class="card-media">
-              <img
-                src="combatframework.webp"
-                alt="Combat Framework Roblox thumbnail"
-                loading="lazy"
-                decoding="async"
-                fetchpriority="low"
-              />
-            </div>
-            <div class="card-body">
-              <span class="role">Reusable combat system · Luau OOP</span>
-              <h3>Combat Framework</h3>
-              <p>
-                A modular melee combat framework built around hitboxes, combat
-                states, and reliable server-side hit detection.
-              </p>
-              <div class="tags">
-                <span class="tag">Combat</span><span class="tag">Framework</span
-                ><span class="tag">Luau OOP</span
-                ><span class="tag">Networking</span>
+      <section class="work-carousel wrap" aria-label="Selected work cards">
+        <div class="carousel-stage">
+          <div class="carousel-track">
+<article class="card">
+              <div class="card-body">
+                <span class="role">Reusable combat system · Luau OOP</span>
+                <h3>Combat Framework</h3>
+                <p>
+                  A modular melee combat framework built around hitboxes, combat
+                  states, and reliable server-side hit detection.
+                </p>
+                <div class="tags">
+                  <span class="tag">Combat</span><span class="tag">Framework</span
+                  ><span class="tag">Luau OOP</span
+                  ><span class="tag">Networking</span>
+                </div>
+                <div class="card-foot">
+                  <span class="meta">73 visits · updated 2026-05</span>
+                  <a
+                    class="card-link"
+                    href="https://www.roblox.com/games/91647918827101/Combat-Framework"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Open Combat Framework on Roblox"
+                  ></a>
+                  <span class="link"
+                    >View experience
+                    <span class="arrow" aria-hidden="true">→</span></span
+                  >
+                </div>
               </div>
-              <div class="card-foot">
-                <span class="meta">73 visits · updated 2026-05</span>
-                <a
-                  class="card-link"
-                  href="https://www.roblox.com/games/91647918827101/Combat-Framework"
-                  target="_blank"
-                  rel="noopener"
-                  aria-label="Open Combat Framework on Roblox"
-                ></a>
-                <span class="link"
-                  >View experience
-                  <span class="arrow" aria-hidden="true">→</span></span
-                >
+            </article>
+<article class="card">
+              <div class="card-body">
+                <span class="role">Physics traversal · momentum</span>
+                <h3>ODM Gear Showcase</h3>
+                <p>
+                  Attack on Titan-style omni-directional mobility gear: grappling,
+                  swinging, and real momentum. My oldest live project, and one of
+                  my favourites.
+                </p>
+                <div class="tags">
+                  <span class="tag">Movement</span><span class="tag">Physics</span
+                  ><span class="tag">Grappling</span>
+                </div>
+                <div class="card-foot">
+                  <span class="meta">13 visits · 1 like</span>
+                  <a
+                    class="card-link"
+                    href="https://www.roblox.com/games/10441308512/ODM-Gear-Showcase"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Open ODM Gear Showcase on Roblox"
+                  ></a>
+                  <span class="link"
+                    >View <span class="arrow" aria-hidden="true">→</span></span
+                  >
+                </div>
               </div>
-            </div>
-          </article>
-
-          <article class="card reveal">
-            <div class="card-media">
-              <img
-                src="odmgear.webp"
-                alt="ODM Gear Showcase Roblox thumbnail"
-                loading="lazy"
-                decoding="async"
-                fetchpriority="low"
-              />
-            </div>
-            <div class="card-body">
-              <span class="role">Physics traversal · momentum</span>
-              <h3>ODM Gear Showcase</h3>
-              <p>
-                Attack on Titan-style omni-directional mobility gear: grappling,
-                swinging, and real momentum. My oldest live project, and one of
-                my favourites.
-              </p>
-              <div class="tags">
-                <span class="tag">Movement</span><span class="tag">Physics</span
-                ><span class="tag">Grappling</span>
+            </article>
+<article class="card">
+              <div class="card-body">
+                <span class="role">R15 traversal base · template</span>
+                <h3>Grappling Game</h3>
+                <p>
+                  A grappling-hook traversal game made in R15. This was a fun
+                  commission for one of my clients; I scripted the whole game, and
+                  the client provided the assets.
+                </p>
+                <div class="tags">
+                  <span class="tag">Movement</span
+                  ><span class="tag">Grappling</span
+                  ><span class="tag">Template</span>
+                </div>
+                <div class="card-foot">
+                  <span class="meta">26 visits · created 2026</span>
+                  <a
+                    class="card-link"
+                    href="https://www.roblox.com/games/100061109427541/GrapplingGameBaseplate"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Open GrapplingGameBaseplate on Roblox"
+                  ></a>
+                  <span class="link"
+                    >View <span class="arrow" aria-hidden="true">→</span></span
+                  >
+                </div>
               </div>
-              <div class="card-foot">
-                <span class="meta">13 visits · 1 like</span>
-                <a
-                  class="card-link"
-                  href="https://www.roblox.com/games/10441308512/ODM-Gear-Showcase"
-                  target="_blank"
-                  rel="noopener"
-                  aria-label="Open ODM Gear Showcase on Roblox"
-                ></a>
-                <span class="link"
-                  >View <span class="arrow" aria-hidden="true">→</span></span
-                >
+            </article>
+<article class="card">
+              <div class="card-body">
+                <span class="role">PvP arena · framework testbed</span>
+                <h3>BattleArena</h3>
+                <p>
+                  An anime battle arena-style game and my most recent project. It
+                  is still in progress, with four characters in testing, but feel
+                  free to check it out.
+                </p>
+                <div class="tags">
+                  <span class="tag">Combat</span><span class="tag">PvP</span
+                  ><span class="tag">Arena</span>
+                </div>
+                <div class="card-foot">
+                  <span class="meta">9 visits · active Jul 2026</span>
+                  <a
+                    class="card-link"
+                    href="https://www.roblox.com/games/74673380921481/BattleArena"
+                    target="_blank"
+                    rel="noopener"
+                    aria-label="Open BattleArena on Roblox"
+                  ></a>
+                  <span class="link"
+                    >View <span class="arrow" aria-hidden="true">→</span></span
+                  >
+                </div>
               </div>
-            </div>
-          </article>
-
-          <article class="card reveal">
-            <div class="card-media">
-              <img
-                src="grappling.webp"
-                alt="GrapplingGameBaseplate Roblox thumbnail"
-                loading="lazy"
-                decoding="async"
-                fetchpriority="low"
-              />
-            </div>
-            <div class="card-body">
-              <span class="role">R15 traversal base · template</span>
-              <h3>Grappling Game</h3>
-              <p>
-                A grappling-hook traversal game made in R15. This was a fun
-                commission for one of my clients; I scripted the whole game, and
-                the client provided the assets.
-              </p>
-              <div class="tags">
-                <span class="tag">Movement</span
-                ><span class="tag">Grappling</span
-                ><span class="tag">Template</span>
-              </div>
-              <div class="card-foot">
-                <span class="meta">26 visits · created 2026</span>
-                <a
-                  class="card-link"
-                  href="https://www.roblox.com/games/100061109427541/GrapplingGameBaseplate"
-                  target="_blank"
-                  rel="noopener"
-                  aria-label="Open GrapplingGameBaseplate on Roblox"
-                ></a>
-                <span class="link"
-                  >View <span class="arrow" aria-hidden="true">→</span></span
-                >
-              </div>
-            </div>
-          </article>
-
-          <article class="card reveal">
-            <div class="card-media">
-              <img
-                src="battlearena.webp"
-                alt="BattleArena Roblox thumbnail"
-                loading="lazy"
-                decoding="async"
-                fetchpriority="low"
-              />
-            </div>
-            <div class="card-body">
-              <span class="role">PvP arena · framework testbed</span>
-              <h3>BattleArena</h3>
-              <p>
-                An anime battle arena-style game and my most recent project. It
-                is still in progress, with four characters in testing, but feel
-                free to check it out.
-              </p>
-              <div class="tags">
-                <span class="tag">Combat</span><span class="tag">PvP</span
-                ><span class="tag">Arena</span>
-              </div>
-              <div class="card-foot">
-                <span class="meta">9 visits · active Jul 2026</span>
-                <a
-                  class="card-link"
-                  href="https://www.roblox.com/games/74673380921481/BattleArena"
-                  target="_blank"
-                  rel="noopener"
-                  aria-label="Open BattleArena on Roblox"
-                ></a>
-                <span class="link"
-                  >View <span class="arrow" aria-hidden="true">→</span></span
-                >
-              </div>
-            </div>
-          </article>
+            </article>
+          </div>
+        </div>
+        <div class="carousel-nav">
+          <button class="carousel-arrow" type="button" data-prev aria-label="Previous project">
+            ←
+          </button>
+          <p class="carousel-count"><b>01</b> / 04</p>
+          <button class="carousel-arrow" type="button" data-next aria-label="Next project">
+            →
+          </button>
         </div>
       </section>
 
@@ -1941,6 +1943,68 @@
           { rootMargin: "300px 0px" },
         );
         videos.forEach((video) => observer.observe(video));
+      })();
+
+      // Work carousel: three slots with the selected card overlapping
+      // its neighbours. Arrows or arrow keys navigate; wraps around.
+      (() => {
+        const section = document.querySelector(".work-carousel");
+        const track = section?.querySelector(".carousel-track");
+        const stage = section?.querySelector(".carousel-stage");
+        if (!section || !track || !stage) return;
+
+        const cards = Array.from(track.querySelectorAll(".card"));
+        const indexEl = section.querySelector(".carousel-count b");
+        let active = 0;
+
+        const sizeStage = () => {
+          let height = 0;
+          cards.forEach((card) => {
+            height = Math.max(height, card.offsetHeight);
+          });
+          stage.style.height = `${height}px`;
+        };
+
+        const render = () => {
+          cards.forEach((card, i) => {
+            let d = (i - active + cards.length) % cards.length;
+            if (d > cards.length / 2) d -= cards.length;
+            card.classList.toggle("is-active", d === 0);
+            card.classList.toggle("is-side", Math.abs(d) === 1);
+            card.classList.toggle("is-hidden", Math.abs(d) > 1);
+            card.toggleAttribute("inert", Math.abs(d) > 1);
+            card.style.setProperty("--dir", String(Math.sign(d) || 1));
+          });
+          if (indexEl)
+            indexEl.textContent = String(active + 1).padStart(2, "0");
+          sizeStage();
+        };
+
+        const go = (dir) => {
+          active = (active + dir + cards.length) % cards.length;
+          render();
+        };
+
+        section
+          .querySelector("[data-prev]")
+          ?.addEventListener("click", () => go(-1));
+        section
+          .querySelector("[data-next]")
+          ?.addEventListener("click", () => go(1));
+        section.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            go(-1);
+          } else if (event.key === "ArrowRight") {
+            event.preventDefault();
+            go(1);
+          }
+        });
+
+        addEventListener("resize", sizeStage);
+        addEventListener("load", sizeStage);
+        render();
+        requestAnimationFrame(() => track.classList.add("carousel-ready"));
       })();
     </script>
 
