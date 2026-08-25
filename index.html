@@ -469,6 +469,9 @@
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
+        filter: drop-shadow(
+          0 0 26px color-mix(in srgb, var(--accent) 22%, transparent)
+        );
       }
       html[data-theme="light"] .grad {
         background: linear-gradient(
@@ -2319,9 +2322,9 @@
             // Storm palettes, lerped smoothly whenever data-theme flips.
             const PALETTES = {
               dark: {
-                void: "#05060e",
-                deep: "#131b41",
-                mid: "#5a3be8",
+                void: "#04050c",
+                deep: "#141e4e",
+                mid: "#6a48ff",
                 glow: "#3fd6ff",
                 core: "#ffffff",
                 bolt: "#e0fcff",
@@ -2378,7 +2381,7 @@
                 float ax = psi(p + vec2(e, 0.0), t) - psi(p - vec2(e, 0.0), t);
                 float ay = psi(p + vec2(0.0, e), t) - psi(p - vec2(0.0, e), t);
                 vec2 v = vec2(ay, -ax) / (2.0 * e) * 0.085;
-                v += 0.014 * vec2(-(p.y - 0.5), (p.x - 0.5)); // slow swirl
+                v += 0.011 * vec2(-(p.y - 0.5), (p.x - 0.5)); // slow swirl
                 return v;
               }
               float ridged(vec2 p) {
@@ -2454,6 +2457,8 @@
                 gl_FragColor = packS(clamp(vec2(d, ch), 0.0, 1.0));
               }
             `;
+
+            // ---- pass 2: plasma shading + lightning ---------------------
             const VERT = `
               varying vec2 vUv;
               void main() {
@@ -2462,19 +2467,21 @@
               }
             `;
 
-
-            // ---- pass 2: plasma shading + lightning ---------------------
             const DISP_FRAG = `
               precision highp float;
               uniform sampler2D uState;
+              uniform vec2 uTexel;
               uniform float uTime;
               uniform float uAspect;
               uniform float uScroll;
               uniform float uFlash;
+              uniform float uDark;
               uniform float uBoltAge;
               uniform float uBoltDur;
               uniform vec4 uBoltPts[16];
               uniform int uBoltCount;
+              uniform vec4 uBranchPts[8];
+              uniform int uBranchCount;
               uniform vec3 uVoid;
               uniform vec3 uDeep;
               uniform vec3 uMid;
@@ -2492,6 +2499,23 @@
               float S(vec2 uv) { return unpackS(texture2D(uState, uv)).x; }
               float C(vec2 uv) { return unpackS(texture2D(uState, uv)).y; }
 
+              // Twinkling motes: hash-grid sparks with a gentle wander.
+              float moteLayer(vec2 p, float t, float seed) {
+                vec2 g = floor(p);
+                vec2 f = fract(p);
+                float h = hash21(g * 1.37 + seed);
+                if (h < 0.80) return 0.0;
+                vec2 o = vec2(
+                  hash21(g + seed + 17.1),
+                  hash21(g + seed + 31.7)
+                ) * 0.8 + 0.1;
+                o += 0.16 * sin(t * (0.3 + h) + seed) * vec2(1.0, 0.8);
+                float tw = sin(t * (0.6 + h * 2.2) + h * 50.0) *
+                  0.5 + 0.5;
+                return smoothstep(0.10, 0.02, length(f - o)) *
+                  tw * (0.35 + 0.65 * h);
+              }
+
               void main() {
                 vec2 uv = vUv;
                 float d = S(uv);
@@ -2499,10 +2523,9 @@
                 vec2 ppx = uv * vec2(uAspect, 1.0);
                 vec2 pp = (uv - 0.5) * vec2(uAspect, 1.0);
 
-                // Laminar striations: ridged noise sampled through the
-                // live velocity field with a cycling flow-map offset, so
-                // the pattern shears endlessly without ever smearing out.
                 vec2 vel = flowVel(ppx, uTime);
+
+                // Laminar striations via the cycling flow-map trick.
                 float cyc1 = 5.0;
                 float t1 = mod(uTime, cyc1);
                 float t2 = mod(uTime + cyc1 * 0.5, cyc1);
@@ -2517,33 +2540,72 @@
                 float q2 = ridged((pp + 0.7) * 9.5 - vel * s2 * 11.0);
                 float lam2 = mix(q1, q2, s1 / cyc2);
 
-                // Depth of the dye wash, then violet mid-tones.
-                vec3 col = mix(uVoid, uDeep, smoothstep(0.05, 0.9, d));
-                col = mix(col, uMid, smoothstep(0.3, 1.1, d) * 0.85);
-
-                // Plasma veins: laminar filaments lit by local charge.
-                float veins =
-                  lam1 * (0.22 + 0.78 * clamp(d * 1.4, 0.0, 1.0));
-                col = mix(
-                  col,
-                  uGlow,
-                  clamp(veins * (0.30 + ch * 0.55), 0.0, 1.0)
+                // Silk shading: treat dye density as a height field and
+                // light its gradient softly, so sheets read as fabric.
+                float dx = S(uv + vec2(uTexel.x, 0.0)) -
+                  S(uv - vec2(uTexel.x, 0.0));
+                float dy = S(uv + vec2(0.0, uTexel.y)) -
+                  S(uv - vec2(0.0, uTexel.y));
+                vec3 sn = normalize(vec3(-dx * 9.0, 1.0, -dy * 9.0));
+                float silk = pow(
+                  clamp(dot(sn, normalize(vec3(0.35, 0.62, 0.70))), 0.0, 1.0),
+                  1.6
                 );
 
+                // Atmosphere: faint storm-light pooled above centre.
+                float haze =
+                  exp(-length(pp * vec2(0.75, 1.15) - vec2(0.0, 0.30)) * 1.1);
+
+                // Compose: atmosphere, dye body, violet mid-tones.
+                vec3 col = mix(uVoid, uDeep, haze * 0.85);
+                col = mix(col, uDeep,
+                  smoothstep(0.05, 0.9, d) * 0.90);
+                col = mix(col, uMid,
+                  smoothstep(0.30, 1.05, d) * (0.55 + 0.45 * silk));
+
+                // Plasma veins, dimmed where the silk light falls away.
+                float veins =
+                  lam1 * (0.18 + 0.82 * clamp(d * 1.5, 0.0, 1.0));
+                col = mix(col, uGlow, clamp(
+                  veins * (0.26 + ch * 0.60) * (0.55 + 0.45 * silk),
+                  0.0, 1.0));
+
                 // White-hot sparks where fine filaments meet charge.
-                float sp = pow(lam2, 7.0) * clamp(ch * 1.3, 0.0, 1.0);
+                float sp = pow(lam2, 7.5) * clamp(ch * 1.35, 0.0, 1.0);
                 col = mix(col, uCore, sp);
 
-                // Procedural bolt: Gaussian core + wide halo along the
-                // uploaded polyline, strobing per frame and fading on an
-                // attack/decay envelope.
+                // Fake bloom: thresholded multi-tap of the state field.
+                float bloom = 0.0;
+                for (int i = 0; i < 8; i++) {
+                  float an = float(i) * 0.785398;
+                  vec2 off = vec2(cos(an), sin(an)) * uTexel * 5.0;
+                  vec2 bs = unpackS(texture2D(uState, uv + off));
+                  bloom += max(bs.y - 0.22, 0.0) +
+                    max(bs.x - 0.38, 0.0) * 0.6;
+                }
+                bloom *= 0.125;
+                col += mix(uMid, uGlow, clamp(ch * 1.2, 0.0, 1.0)) *
+                  bloom * (0.9 + silk * 0.6);
+
+                // Motes: dust drifting in the lit regions.
+                float motes = moteLayer((pp + 0.5) * 16.0, uTime, 7.0) *
+                  0.50 +
+                  moteLayer((pp + 0.5) * 27.0 + 13.7, uTime * 1.3, 41.0) *
+                  0.32;
+                motes *= 0.15 + 0.85 * clamp(d + ch * 0.8, 0.0, 1.0);
+                col = mix(col, uGlow, clamp(motes, 0.0, 1.0) * 0.55);
+
+                // Lightning: main channel plus an optional fork, drawn as
+                // Gaussian core/halo with corona shimmer and stutter.
                 if (uBoltCount > 1) {
                   float env =
                     smoothstep(0.0, 0.045, uBoltAge) *
-                    (1.0 - smoothstep(uBoltDur * 0.55, uBoltDur, uBoltAge));
-                  float gf =
-                    0.55 + 0.85 * pow(hash11(floor(uTime * 43.0)), 2.0);
-                  env *= gf;
+                    (1.0 -
+                      smoothstep(uBoltDur * 0.55, uBoltDur, uBoltAge));
+                  env *= 0.78 +
+                    0.85 * pow(hash11(floor(uTime * 43.0)), 2.0);
+                  env *= 0.80 + 0.20 *
+                    sin(uBoltAge * 95.0) * sin(uBoltAge * 41.0 + 1.7);
 
                   float best = 1e3;
                   float pw = 1.0;
@@ -2565,15 +2627,48 @@
                   col = mix(col, uBoltCol,
                     clamp(core * env * (0.6 + pw), 0.0, 1.0));
                   col = mix(col, uGlow,
-                    clamp(halo * env * 0.35 * (0.4 + pw), 0.0, 1.0));
+                    clamp(halo * env * 0.32 * (0.4 + pw), 0.0, 1.0));
+
+                  // Corona: wide ionised shimmer hugging the channel.
+                  float cor = exp(-(best * best) / 0.02) *
+                    (0.5 + 0.5 *
+                      vnoise(vec2(best * 220.0, uTime * 2.5)));
+                  col = mix(col, uGlow,
+                    clamp(cor * env * 0.10, 0.0, 1.0));
+
+                  if (uBranchCount > 1) {
+                    float bBest = 1e3;
+                    float bPw = 1.0;
+                    for (int j = 0; j < 7; j++) {
+                      if (j >= uBranchCount - 1) break;
+                      vec2 a = uBranchPts[j].xy * vec2(uAspect, 1.0);
+                      vec2 b = uBranchPts[j + 1].xy *
+                        vec2(uAspect, 1.0);
+                      float dd = segDist(ppx, a, b);
+                      if (dd < bBest) {
+                        bBest = dd;
+                        bPw = 0.5 * (uBranchPts[j].w +
+                          uBranchPts[j + 1].w);
+                      }
+                    }
+                    float bcw = 0.0045 * (0.7 + bPw);
+                    float bcore =
+                      exp(-(bBest * bBest) / (2.0 * bcw * bcw));
+                    col = mix(col, uBoltCol,
+                      clamp(bcore * env * bPw * 0.8, 0.0, 1.0));
+                  }
                 }
 
-                // Scene-wide flash riding each strike.
-                col += (uCore - uVoid) * uFlash * 0.10;
+                // Scene flash, kept soft.
+                col += (uCore - uVoid) * uFlash * 0.07;
+
+                // Filmic exposure in dark mode only (paper stays paper).
+                col = max(col, vec3(0.0));
+                col = mix(col, 1.0 - exp(-col * 1.45), uDark);
 
                 // Film grain.
                 col += (hash21(gl_FragCoord.xy + fract(uTime) * 61.7) - 0.5) *
-                  0.05;
+                  0.03;
 
                 // Soft vignette lets the page background breathe at edges.
                 float rr = length((uv - 0.5) * vec2(uAspect, 1.0));
@@ -2596,12 +2691,15 @@
             const defines = byteMode ? { BYTE_STATE: "" } : {};
 
             const drops = Array.from({ length: 16 }, () => new THREE.Vector4());
+            const branch = Array.from({ length: 8 }, () => new THREE.Vector4());
             const uTimeS = { value: 0 };
             const uAspectS = { value: 1 };
             const uTexelS = { value: new THREE.Vector2() };
             const uStateS = { value: null };
             const uBoltU = { value: drops };
             const uBoltNU = { value: 0 };
+            const uBranchU = { value: branch };
+            const uBranchNU = { value: 0 };
 
             const simUniforms = {
               uState: uStateS,
@@ -2610,21 +2708,25 @@
               uAspect: uAspectS,
               uDt: { value: 1 / 60 },
               uPointer: { value: new THREE.Vector4(0.5, 0.5, 0, 0.02) },
-              uEmitterA: { value: new THREE.Vector4(0.32, 0.42, 0.16, 0) },
-              uEmitterB: { value: new THREE.Vector4(0.68, 0.62, 0.12, 0) },
+              uEmitterA: { value: new THREE.Vector4(0.32, 0.42, 0.125, 0) },
+              uEmitterB: { value: new THREE.Vector4(0.68, 0.62, 0.095, 0) },
               uBoltPts: uBoltU,
               uBoltCount: uBoltNU,
             };
             const dispUniforms = {
               uState: uStateS,
+              uTexel: uTexelS,
               uTime: uTimeS,
               uAspect: uAspectS,
               uScroll: { value: 0 },
               uFlash: { value: 0 },
+              uDark: { value: root.dataset.theme === "light" ? 0 : 1 },
               uBoltAge: { value: 0 },
               uBoltDur: { value: 1 },
               uBoltPts: uBoltU,
               uBoltCount: uBoltNU,
+              uBranchPts: uBranchU,
+              uBranchCount: uBranchNU,
               uVoid: { value: pal.void },
               uDeep: { value: pal.deep },
               uMid: { value: pal.mid },
@@ -2703,13 +2805,13 @@
               simUniforms.uEmitterA.value.set(
                 0.5 + 0.30 * Math.cos(t * 0.19),
                 0.5 + 0.26 * Math.sin(t * 0.147),
-                0.16,
+                0.125,
                 0,
               );
               simUniforms.uEmitterB.value.set(
                 0.5 + 0.32 * Math.cos(t * 0.113 + Math.PI),
                 0.5 + 0.24 * Math.sin(t * 0.173 + Math.PI),
-                0.12,
+                0.095,
                 0,
               );
             };
@@ -2757,27 +2859,66 @@
                 }
                 pts = out;
               }
-              return pts.slice(0, 16);
+              return pts;
             };
 
             const uFlashU = dispUniforms.uFlash;
+            const uDarkU = dispUniforms.uDark;
             let flash = 0;
-            const boltState = { start: 0, dur: 1, restrike: false, restrikeAt: 0 };
+            const boltState =
+              { start: 0, dur: 1, restrike: false, restrikeAt: 0 };
 
             const spawnBolt = (ax, ay, bx, by, opt = {}) => {
-              const raw = makeBoltPath(ax, ay, bx, by);
-              const n = raw.length;
-              for (let i = 0; i < n; i++) {
-                const tt = i / (n - 1);
+              const power = opt.power ?? 1;
+              const width = opt.width ?? 0.011;
+
+              // Main channel, padded so unused segments are degenerate.
+              const main = makeBoltPath(ax, ay, bx, by).slice(0, 16);
+              const n = main.length;
+              for (let i = 0; i < 16; i++) {
+                const p = main[Math.min(i, n - 1)];
+                const tt = Math.min(i, n - 1) / (n - 1);
                 const taper = Math.sin(Math.PI * tt) * 0.75 + 0.45;
-                drops[i].set(
-                  raw[i][0],
-                  raw[i][1],
-                  (opt.width ?? 0.011) * taper,
-                  (opt.power ?? 1) * taper,
-                );
+                drops[i].set(p[0], p[1], width * taper, power * taper);
               }
-              uBoltNU.value = n;
+              uBoltNU.value = 16;
+
+              // A fork leaves partway down the channel, most strikes.
+              if (!opt.micro && Math.random() < 0.85) {
+                const bi = Math.floor(4 + Math.random() *
+                  Math.max(1, n - 7));
+                const [px, py] = main[Math.min(bi, n - 2)];
+                const ang =
+                  Math.atan2(by - ay, bx - ax) +
+                  (Math.random() < 0.5 ? -1 : 1) *
+                    (0.55 + Math.random() * 0.7);
+                const bl = 0.08 + Math.random() * 0.16;
+                const br = makeBoltPath(
+                  px,
+                  py,
+                  px + Math.cos(ang) * bl,
+                  py + Math.sin(ang) * bl * 0.45 -
+                    0.04 - Math.random() * 0.08,
+                ).slice(0, 8);
+                const bn = br.length;
+                for (let j = 0; j < 8; j++) {
+                  const q = br[Math.min(j, bn - 1)];
+                  const tt = Math.min(j, bn - 1) / (bn - 1);
+                  const taper =
+                    (Math.sin(Math.PI * tt) * 0.75 + 0.45) *
+                    (1 - tt * 0.35);
+                  branch[j].set(
+                    q[0],
+                    q[1],
+                    width * 0.7 * taper,
+                    power * 0.6 * taper,
+                  );
+                }
+                uBranchNU.value = 8;
+              } else {
+                uBranchNU.value = 0;
+              }
+
               boltState.start = simTime;
               boltState.dur = opt.dur ?? 0.16 + Math.random() * 0.12;
               boltState.restrike =
@@ -2786,11 +2927,10 @@
                 boltState.start + 0.07 + Math.random() * 0.05;
               dispUniforms.uBoltAge.value = 0;
               dispUniforms.uBoltDur.value = boltState.dur;
-              flash = Math.min(1, flash + (opt.power ?? 1) *
-                (opt.micro ? 0.35 : 0.9));
+              flash = Math.min(1, flash + power * (opt.micro ? 0.3 : 0.85));
             };
 
-            let nextStrike = reduced ? Infinity : 2.6;
+            let nextStrike = reduced ? Infinity : 3.4;
 
             // ---- interaction --------------------------------------------
             const ndcLast = new THREE.Vector2(0.5, 0.5);
@@ -2809,7 +2949,7 @@
               simUniforms.uPointer.value.set(
                 x,
                 y,
-                Math.min(0.12 + energy * 0.9, 1.0),
+                Math.min(0.10 + energy * 0.75, 0.85),
                 0.012 + sp * 1.5,
               );
               ndcLast.set(x, y);
@@ -2817,8 +2957,8 @@
               // Fast flicks snap micro-arcs off the cursor.
               if (
                 !reduced &&
-                movedAcc > 0.32 &&
-                simTime - lastMicro > 0.45
+                movedAcc > 0.34 &&
+                simTime - lastMicro > 0.55
               ) {
                 movedAcc = 0;
                 lastMicro = simTime;
@@ -2827,7 +2967,7 @@
                 const ln = 0.10 + Math.random() * 0.12;
                 spawnBolt(x, y, x + Math.cos(ang) * ln,
                   y + Math.sin(ang) * ln,
-                  { micro: true, power: 0.55, width: 0.008, dur: 0.11 });
+                  { micro: true, power: 0.5, width: 0.008, dur: 0.11 });
               }
             }, { passive: true });
 
@@ -2835,13 +2975,13 @@
               energy = 1;
               const x = e.clientX / innerWidth;
               const y = 1 - e.clientY / innerHeight;
-              simUniforms.uPointer.value.set(x, y, 1.4, 0.03);
+              simUniforms.uPointer.value.set(x, y, 1.3, 0.03);
               if (!reduced) {
                 const ang = Math.PI / 2 + (Math.random() - 0.5) * 2.4;
                 const ln = 0.18 + Math.random() * 0.14;
                 spawnBolt(x, y, x + Math.cos(ang) * ln,
                   y - Math.sin(ang) * ln,
-                  { power: 0.85, width: 0.010, dur: 0.13 });
+                  { power: 0.8, width: 0.010, dur: 0.13 });
               }
             }, { passive: true });
 
@@ -2867,9 +3007,11 @@
             // ---- theme sync ---------------------------------------------
             let themeHex =
               PALETTES[root.dataset.theme === "light" ? "light" : "dark"];
+            let darkTarget = root.dataset.theme === "light" ? 0 : 1;
             new MutationObserver(() => {
               themeHex =
                 PALETTES[root.dataset.theme === "light" ? "light" : "dark"];
+              darkTarget = root.dataset.theme === "light" ? 0 : 1;
               if (reduced) renderStill();
             }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
@@ -2881,6 +3023,7 @@
 
             const renderStill = () => {
               for (const key of Object.keys(pal)) pal[key].set(themeHex[key]);
+              uDarkU.value = darkTarget;
               dispUniforms.uScroll.value = scrollY;
               renderer.setRenderTarget(null);
               renderer.render(dispScene, cam);
@@ -2931,7 +3074,7 @@
                 simTime >= boltState.restrikeAt
               ) {
                 boltState.restrike = false;
-                flash = Math.max(flash, 0.7);
+                flash = Math.max(flash, 0.65);
                 boltState.start = simTime;
                 dispUniforms.uBoltAge.value = 0;
               }
@@ -2941,7 +3084,7 @@
                 const ax = 0.15 + Math.random() * 0.7;
                 const bx = ax + (Math.random() - 0.5) * 0.5;
                 spawnBolt(ax, 1.04, bx, 0.25 + Math.random() * 0.4);
-                nextStrike = simTime + 2.4 + Math.random() * 4.5;
+                nextStrike = simTime + 4.2 + Math.random() * 5.0;
               }
               flash *= Math.exp(-dt * 7.5);
               uFlashU.value = flash;
@@ -2950,6 +3093,7 @@
               const k = 1 - Math.exp(-dt * 4.5);
               for (const key of Object.keys(pal))
                 pal[key].lerp(tmpColor.set(themeHex[key]), k);
+              uDarkU.value += (darkTarget - uDarkU.value) * k;
 
               advect();
 
