@@ -32,8 +32,8 @@
         --text: #e9f0f7;
         --muted: #93a4b8;
         --faint: #5d6e83;
-        --accent: #3aabff;
-        --accent-2: #7cc7ff;
+        --accent: #3aa0f5;
+        --accent-2: #82c7ff;
         --accent-3: #e9f0f7;
         --line: rgba(233, 240, 247, 0.09);
         --line-2: rgba(233, 240, 247, 0.18);
@@ -88,8 +88,8 @@
         --text: #0e1621;
         --muted: #48586b;
         --faint: #8595a6;
-        --accent: #0a63c4;
-        --accent-2: #3d8fe0;
+        --accent: #0b62bd;
+        --accent-2: #3d87dd;
         --accent-3: #0e1621;
         --line: rgba(14, 22, 33, 0.14);
         --line-2: rgba(14, 22, 33, 0.26);
@@ -182,7 +182,7 @@
         transition: opacity 2s var(--ease);
       }
       .webgl.on {
-        opacity: 0.95;
+        opacity: 1;
       }
 
       .grid-layer {
@@ -239,7 +239,7 @@
       }
 
       :focus-visible {
-        outline: 2px dashed var(--accent);
+        outline: 2px solid var(--accent);
         outline-offset: 3px;
         border-radius: 0;
       }
@@ -350,7 +350,7 @@
         font-size: 0.74rem;
         text-transform: uppercase;
         letter-spacing: 0.14em;
-        transform: skewX(-6deg);
+        transform: skewX(-4deg);
         filter: drop-shadow(var(--ds));
         transition:
           transform 0.2s var(--ease),
@@ -358,7 +358,7 @@
           background 0.2s;
       }
       .nav-cta:hover {
-        transform: skewX(-6deg) translateY(-2px);
+        transform: skewX(-4deg) translateY(-2px);
         background: var(--accent-2);
         filter: drop-shadow(var(--dsa));
       }
@@ -527,7 +527,7 @@
         border-radius: 50%;
         background: var(--accent);
         box-shadow: 0 0 0 0 var(--accent);
-        animation: ping 2.6s var(--ease) infinite;
+        animation: ping 3.4s var(--ease) infinite;
       }
       .badge b {
         color: var(--text);
@@ -588,7 +588,7 @@
         text-transform: uppercase;
         letter-spacing: 0.14em;
         font-weight: 600;
-        transform: skewX(-6deg);
+        transform: skewX(-4deg);
         filter: drop-shadow(var(--ds));
         cursor: pointer;
         transition:
@@ -602,7 +602,7 @@
         transition: transform 0.2s var(--ease);
       }
       .btn:hover {
-        transform: skewX(-6deg) translateY(-2px);
+        transform: skewX(-4deg) translateY(-2px);
         border-color: var(--accent);
         color: var(--accent);
         background:
@@ -694,13 +694,6 @@
         border-block: 1px solid var(--line);
         overflow: hidden;
         background:
-          repeating-linear-gradient(
-            135deg,
-            transparent 0,
-            transparent 12px,
-            color-mix(in srgb, var(--accent) 5%, transparent) 12px,
-            color-mix(in srgb, var(--accent) 5%, transparent) 13px
-          ),
           linear-gradient(
             90deg,
             transparent,
@@ -886,10 +879,10 @@
         border-radius: var(--r);
         background-color: color-mix(in srgb, var(--surface) 64%, transparent);
         background-image: radial-gradient(
-          color-mix(in srgb, var(--accent) 9%, transparent) 1px,
-          transparent 1.35px
+          color-mix(in srgb, var(--accent) 4%, transparent) 1px,
+          transparent 1.3px
         );
-        background-size: 10px 10px;
+        background-size: 13px 13px;
         backdrop-filter: blur(10px);
         box-shadow: var(--shadow);
         transition:
@@ -907,8 +900,8 @@
         z-index: 4;
         width: 0;
         height: 0;
-        border-top: 30px solid var(--accent);
-        border-right: 30px solid transparent;
+        border-top: 18px solid var(--accent);
+        border-right: 18px solid transparent;
       }
       .card::after {
         content: "";
@@ -919,7 +912,7 @@
         background:
           radial-gradient(
             240px circle at var(--gx, 50%) var(--gy, -30%),
-            rgba(255, 255, 255, 0.16),
+            rgba(255, 255, 255, 0.11),
             transparent 60%
           ),
           linear-gradient(
@@ -927,7 +920,7 @@
             rgba(255, 255, 255, 0.1),
             rgba(255, 255, 255, 0) 42%
           );
-        opacity: 0.45;
+        opacity: 0.32;
         transition: opacity 0.3s var(--ease);
       }
       .card:hover::after,
@@ -957,7 +950,7 @@
         background: var(--accent);
         padding: 0.28rem 0.6rem;
         width: fit-content;
-        transform: skewX(-10deg);
+        transform: skewX(-5deg);
       }
       .card h3 {
         font-size: clamp(1.35rem, 2.4vw, 2.1rem);
@@ -988,7 +981,7 @@
         border: 1px solid var(--line-2);
         color: var(--muted);
         background: color-mix(in srgb, var(--surface) 50%, transparent);
-        transform: skewX(-10deg);
+        transform: skewX(-5deg);
       }
       .card-foot .link {
         font-family: var(--mono);
@@ -1099,10 +1092,10 @@
         border-radius: var(--r);
         background-color: color-mix(in srgb, var(--surface) 64%, transparent);
         background-image: radial-gradient(
-          color-mix(in srgb, var(--accent) 9%, transparent) 1px,
-          transparent 1.35px
+          color-mix(in srgb, var(--accent) 4%, transparent) 1px,
+          transparent 1.3px
         );
-        background-size: 10px 10px;
+        background-size: 13px 13px;
         backdrop-filter: blur(10px);
         box-shadow: var(--shadow);
         transform:
@@ -1132,8 +1125,7 @@
             rgba(255, 255, 255, 0.09),
             rgba(255, 255, 255, 0) 42%
           );
-        opacity: 0.45;
-        transition: opacity 0.3s var(--ease);
+        opacity: 0.32;        transition: opacity 0.3s var(--ease);
       }
       .clip-card:hover::after,
       .is-live::after {
@@ -1324,7 +1316,7 @@
         transition: text-shadow 0.3s;
       }
       .clip-card:hover h3 {
-        text-shadow: 0 0 24px color-mix(in srgb, var(--accent) 50%, transparent);
+        text-shadow: 0 0 18px color-mix(in srgb, var(--accent) 30%, transparent);
       }
       .clip-card[hidden] {
         display: none;
@@ -1363,10 +1355,10 @@
         clip-path: var(--cut-lg);
         background-color: color-mix(in srgb, var(--surface) 82%, transparent);
         background-image: radial-gradient(
-          color-mix(in srgb, var(--accent) 10%, transparent) 1px,
+          color-mix(in srgb, var(--accent) 5%, transparent) 1px,
           transparent 1.4px
         );
-        background-size: 11px 11px;
+        background-size: 13px 13px;
         padding: clamp(2rem, 5vw, 4rem);
         text-align: center;
         transform:
@@ -1494,21 +1486,21 @@
       }
       .reveal {
         opacity: 0;
-        transform: translate3d(0, 42px, 0) scale(0.985);
-        filter: blur(8px);
+        transform: translate3d(0, 26px, 0) scale(0.99);
+        filter: blur(5px);
         transition:
           opacity 0.72s var(--ease),
           transform 0.78s var(--ease),
           filter 0.78s var(--ease);
       }
       .section-head.reveal {
-        transform: translate3d(-22px, 34px, 0) scale(0.99);
+        transform: translate3d(-14px, 22px, 0) scale(0.995);
       }
       .card.reveal,
       .contact-panel.reveal {
         transform: perspective(1100px)
-          rotateX(calc(var(--rx, 0deg) + 5deg)) rotateY(var(--ry, 0deg))
-          translate3d(0, 44px, 0) scale(0.985);
+          rotateX(calc(var(--rx, 0deg) + 3deg)) rotateY(var(--ry, 0deg))
+          translate3d(0, 28px, 0) scale(0.99);
         transform-origin: 50% 0;
       }
       .card.reveal.in,
@@ -1519,7 +1511,7 @@
       }
       .clip-card.reveal {
         transform: perspective(1100px) rotateX(var(--rx, 0deg))
-          rotateY(var(--ry, 0deg)) translate3d(0, 42px, 0);
+          rotateY(var(--ry, 0deg)) translate3d(0, 26px, 0);
       }
       .clip-card.reveal.in {
         transform: perspective(1100px) rotateX(var(--rx, 0deg))
@@ -1529,10 +1521,10 @@
         transition-duration: 0.12s;
       }
       .about-aside.reveal {
-        transform: translate3d(-28px, 28px, 0) scale(0.99);
+        transform: translate3d(-18px, 18px, 0) scale(0.995);
       }
       .about-copy.reveal {
-        transform: translate3d(28px, 28px, 0) scale(0.99);
+        transform: translate3d(18px, 18px, 0) scale(0.995);
       }
       .reveal.in {
         opacity: 1;
@@ -2410,7 +2402,7 @@
           ".card, .clip-card, .contact-panel",
         );
         if (!panels.length) return;
-        const MAX = 6;
+        const MAX = 4;
         const move = (el, e) => {
           const r = el.getBoundingClientRect();
           const px = (e.clientX - r.left) / r.width;
@@ -2512,23 +2504,23 @@
       })();
     </script>
 
-    <script type="module">
-      // Laminar charge flow — a two-pass GPU field experiment.
+            <script type="module">
+      // Open water — a real-time Gerstner-wave ocean in perspective,
+      // rendered as a study in physical shading rather than spectacle:
       //
-      // Pass 1 (advection): a divergence-free velocity field built from the
-      // curl of an fbm potential (curl noise is incompressible by
-      // construction, so the dye shears into clean laminar sheets instead
-      // of swirling into turbulence). A passive tracer is advected through
-      // it semi-Lagrangian style: sample upstream, decay, reinject. Your
-      // cursor dumps dye and electric charge straight into the field.
-      //
-      // Pass 2 (render): the charge field is shaded as glowing plasma
-      // veins stretched along the flow, then struck by procedural
-      // lightning — midpoint-displacement polylines uploaded as uniforms,
-      // drawn with a Gaussian-core/halo profile, per-segment scintillation,
-      // stochastic restrikes and a scene-wide flash. Bolts also dump charge
-      // back into Pass 1, so every strike leaves a fading wake in the
-      // fluid. Micro-arcs snap off the cursor when you move fast.
+      // • Displacement: five superposed directional Gerstner trains with
+      //   wavelength-proportional phase speeds (deep-water dispersion),
+      //   normals from central differences of the height field.
+      // • Interaction: pointer events raycast onto the sea plane — moves
+      //   drag a Gaussian wake, presses splash expanding wavelet packets
+      //   (travelled ripple fronts with Gaussian envelopes and decay).
+      //   Scrolling raises the viewpoint and feeds a swell-energy term
+      //   that roughens the sea; section focus re-tints the palette.
+      // • Shading: Schlick fresnel between depth colour and a sky
+      //   gradient by reflected-ray elevation, tight specular glints
+      //   along the light vector, approximate subsurface scatter on
+      //   crests, noise-driven foam, and exponential haze into the
+      //   horizon so the water dissolves into the page background.
       //
       // Falls back to the plain CSS background if WebGL or the CDN is
       // unavailable.
@@ -2543,35 +2535,38 @@
             try {
               renderer = new THREE.WebGLRenderer({
                 canvas,
-                alpha: true,
-                antialias: false,
+                antialias: true,
                 powerPreference: "high-performance",
               });
             } catch {
               return;
             }
             renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-            renderer.setClearColor(0x000000, 0);
 
             const root = document.documentElement;
 
-            // Storm palettes, lerped smoothly whenever data-theme flips.
+            // Deep-ocean ramps; lerped on theme change and scaled per
+            // section focus.
             const PALETTES = {
               dark: {
                 void: "#050a12",
-                deep: "#0b2547",
-                mid: "#1e6fd0",
-                glow: "#3aabff",
-                core: "#ffffff",
-                bolt: "#dff1ff",
+                sky: "#10263e",
+                horizon: "#0a1c2e",
+                deep: "#06192c",
+                mid: "#155a8f",
+                glow: "#3aa0f5",
+                core: "#cfe4ff",
+                sun: "#bcd8f5",
               },
               light: {
                 void: "#eff3f7",
-                deep: "#ccdcec",
-                mid: "#8fb8e8",
-                glow: "#0a63c4",
+                sky: "#a9cde8",
+                horizon: "#dde9f2",
+                deep: "#0f4d80",
+                mid: "#2f7fb8",
+                glow: "#0b62bd",
                 core: "#ffffff",
-                bolt: "#0b1522",
+                sun: "#fff3de",
               },
             };
 
@@ -2579,12 +2574,121 @@
             for (const key of Object.keys(PALETTES.dark))
               pal[key] = new THREE.Color(PALETTES.dark[key]);
 
-            // Shared GLSL: hash/value-noise stack, curl-noise flow,
-            // ridged filaments and segment distance.
-            const NOISE_GLSL = `
-              float hash11(float n) {
-                return fract(sin(n * 127.1) * 43758.5453);
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(
+              55,
+              innerWidth / innerHeight,
+              0.5,
+              600,
+            );
+            const CAM = { x: 0, y: 7.5, z: 17 };
+            camera.position.set(CAM.x, CAM.y, CAM.z);
+
+            const uniforms = {
+              uTime: { value: 0 },
+              uEnergy: { value: 1 },
+              uSunDir: {
+                value: new THREE.Vector3(0.25, 0.48, -0.84).normalize(),
+              },
+              uVoid: { value: pal.void },
+              uSky: { value: pal.sky },
+              uHorizon: { value: pal.horizon },
+              uDeep: { value: pal.deep },
+              uMid: { value: pal.mid },
+              uGlow: { value: pal.glow },
+              uCore: { value: pal.core },
+              uSun: { value: pal.sun },
+              uDark: { value: root.dataset.theme === "light" ? 0 : 1 },
+              uWake: { value: new THREE.Vector4(0, 0, 0, 1.7) },
+              uRipples: {
+                value: Array.from({ length: 8 }, () =>
+                  new THREE.Vector4(0, 0, -10, 0),
+                ),
+              },
+            };
+
+            // ---- water surface -----------------------------------------
+            const WATER_VERT = `
+              precision highp float;
+              uniform float uTime;
+              uniform float uEnergy;
+              uniform vec4 uWake;      // xz pos, z strength, w radius
+              uniform vec4 uRipples[8]; // xz centre, age, amplitude
+              varying vec3 vPos;
+              varying vec3 vNormal;
+              varying float vHeight;
+              varying float vDist;
+
+              // Directional wave trains: deep-water dispersion, wavelength
+              // sets both wavenumber and phase speed.
+              float H(vec2 p) {
+                float t = uTime;
+                float h = 0.0;
+
+                h += 0.40 * sin(dot(p, vec2(0.998, 0.062)) * 0.165 + t * 1.45);
+                h += 0.24 * sin(dot(p, vec2(0.883, 0.469)) * 0.349 + t * 1.15);
+                h += 0.13 * sin(dot(p, vec2(0.682, -0.731)) * 0.698 + t * 0.95);
+                h += 0.075 * sin(dot(p, vec2(0.276, 0.961)) * 1.256 + t * 0.75);
+                h += 0.045 * sin(dot(p, vec2(-0.259, 0.966)) * 2.416 + t * 0.60);
+
+                // Splash ripples: travelling wavelet packets with Gaussian
+                // envelopes around the expanding front.
+                for (int i = 0; i < 8; i++) {
+                  float age = uRipples[i].z;
+                  if (age < 0.0 || age > 3.5) continue;
+                  vec2 c = uRipples[i].xy;
+                  float rr = distance(p, c);
+                  float front = rr - age * 3.1;
+                  h += uRipples[i].w *
+                    exp(-front * front * 2.6) *
+                    cos(front * 4.2) *
+                    exp(-age * 1.15) *
+                    exp(-rr * 0.02);
+                }
+
+                // Cursor wake: a soft travelling dimple.
+                float wd = distance(p, uWake.xy);
+                h -= uWake.z * exp(-(wd * wd) / (uWake.w * uWake.w));
+
+                return h * uEnergy;
               }
+
+              void main() {
+                vec3 P = position;
+                float e = 1.1;
+                float h = H(P.xz);
+                P.y = h;
+                float hx = H(P.xz + vec2(e, 0.0)) -
+                  H(P.xz - vec2(e, 0.0));
+                float hz = H(P.xz + vec2(0.0, e)) -
+                  H(P.xz - vec2(0.0, e));
+                vNormal = normalize(vec3(-hx / (2.0 * e), 1.0, -hz / (2.0 * e)));
+                vHeight = h;
+                vPos = P;
+                vDist = distance(P, cameraPosition);
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(P, 1.0);
+              }
+            `;
+
+            const WATER_FRAG = `
+              precision highp float;
+              uniform float uTime;
+              uniform float uEnergy;
+              uniform vec3 uSunDir;
+              uniform vec3 uVoid;
+              uniform vec3 uSky;
+              uniform vec3 uHorizon;
+              uniform vec3 uDeep;
+              uniform vec3 uMid;
+              uniform vec3 uGlow;
+              uniform vec3 uCore;
+              uniform vec3 uSun;
+              uniform float uDark;
+              varying vec3 vPos;
+              varying vec3 vNormal;
+              varying float vHeight;
+              varying float vDist;
+
               float hash21(vec2 p) {
                 return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
               }
@@ -2598,628 +2702,180 @@
                   u.y
                 );
               }
-              float fbm3(vec2 p) {
-                float v = 0.0;
-                float a = 0.5;
-                for (int i = 0; i < 3; i++) {
-                  v += a * vnoise(p);
-                  p = p * 2.13 + vec2(11.7);
-                  a *= 0.5;
-                }
-                return v;
-              }
-              // Potential whose curl gives the incompressible flow.
-              float psi(vec2 p, float t) {
-                return fbm3(p * 1.35 + vec2(t * 0.045, -t * 0.03));
-              }
-              vec2 flowVel(vec2 p, float t) {
-                float e = 0.02;
-                float ax = psi(p + vec2(e, 0.0), t) - psi(p - vec2(e, 0.0), t);
-                float ay = psi(p + vec2(0.0, e), t) - psi(p - vec2(0.0, e), t);
-                vec2 v = vec2(ay, -ax) / (2.0 * e) * 0.085;
-                v += 0.011 * vec2(-(p.y - 0.5), (p.x - 0.5)); // slow swirl
-                return v;
-              }
-              float ridged(vec2 p) {
-                float n = vnoise(p);
-                float r = 1.0 - abs(2.0 * n - 1.0);
-                return r * r * r;
-              }
-              float segDist(vec2 p, vec2 a, vec2 b) {
-                vec2 pa = p - a;
-                vec2 ba = b - a;
-                float h = clamp(dot(pa, ba) / max(dot(ba, ba), 1e-6), 0.0, 1.0);
-                return length(pa - ba * h);
-              }
-            `;
-
-            // ---- pass 1: semi-Lagrangian advection of dye + charge -----
-            const SIM_FRAG = `
-              precision highp float;
-              uniform sampler2D uState;
-              uniform float uDt;
-              uniform float uTime;
-              uniform float uAspect;
-              uniform vec4 uPointer;   // xy pos, z strength, w sigma
-              uniform vec4 uEmitterA;  // xy pos, z rate
-              uniform vec4 uEmitterB;
-              uniform vec4 uBoltPts[16];
-              uniform int uBoltCount;
-              varying vec2 vUv;
-
-              #ifdef BYTE_STATE
-                vec2 unpackS(vec4 t) { return (t.rg - 0.5) * 2.0; }
-                vec4 packS(vec2 s) { return vec4(s * 0.5 + 0.5, 0.0, 1.0); }
-              #else
-                vec2 unpackS(vec4 t) { return t.rg; }
-                vec4 packS(vec2 s) { return vec4(s, 0.0, 1.0); }
-              #endif
-
-            ` + NOISE_GLSL + `
-              void main() {
-                vec2 uv = vUv;
-                vec2 pp = uv * vec2(uAspect, 1.0);
-
-                // Advect upstream through the curl-noise flow.
-                vec2 vel = flowVel(pp, uTime);
-                vec2 s = unpackS(texture2D(uState, uv - vel * uDt));
-                float d = s.x * 0.9868;   // dye dissipation
-                float ch = s.y * 0.952;   // charge decays faster
-
-                // Cursor injection.
-                vec2 pe = (uv - uPointer.xy) / uPointer.w;
-                float pg = exp(-dot(pe, pe));
-                d += uPointer.z * 0.9 * pg;
-                ch += uPointer.z * 1.5 * pg;
-
-                // Ambient emitters keep the laminar sheets alive.
-                vec2 ea = uv - uEmitterA.xy;
-                float ga = exp(-dot(ea, ea) / 0.0006);
-                d += uEmitterA.z * ga * (0.6 + 0.4 * sin(uTime * 1.7));
-                vec2 eb = uv - uEmitterB.xy;
-                float gb = exp(-dot(eb, eb) / 0.0009);
-                d += uEmitterB.z * gb * (0.6 + 0.4 * cos(uTime * 1.3));
-
-                // Bolts dump charge (and a little dye) along their path.
-                for (int i = 0; i < 16; i++) {
-                  if (i >= uBoltCount) break;
-                  vec4 bp = uBoltPts[i];
-                  vec2 be = (uv - bp.xy) / bp.z;
-                  float bg = exp(-dot(be, be));
-                  ch += bp.w * 1.4 * bg;
-                  d += bp.w * 0.12 * bg;
-                }
-
-                gl_FragColor = packS(clamp(vec2(d, ch), 0.0, 1.0));
-              }
-            `;
-
-            // ---- pass 2: plasma shading + lightning ---------------------
-            const VERT = `
-              varying vec2 vUv;
-              void main() {
-                vUv = uv;
-                gl_Position = vec4(position.xy, 0.0, 1.0);
-              }
-            `;
-
-            const DISP_FRAG = `
-              precision highp float;
-              uniform sampler2D uState;
-              uniform vec2 uTexel;
-              uniform float uTime;
-              uniform float uAspect;
-              uniform float uScroll;
-              uniform float uFlash;
-              uniform float uDark;
-              uniform float uBoltAge;
-              uniform float uBoltDur;
-              uniform vec4 uBoltPts[16];
-              uniform int uBoltCount;
-              uniform vec4 uBranchPts[8];
-              uniform int uBranchCount;
-              uniform vec3 uVoid;
-              uniform vec3 uDeep;
-              uniform vec3 uMid;
-              uniform vec3 uGlow;
-              uniform vec3 uCore;
-              uniform vec3 uBoltCol;
-              varying vec2 vUv;
-
-              #ifdef BYTE_STATE
-                vec2 unpackS(vec4 t) { return (t.rg - 0.5) * 2.0; }
-              #else
-                vec2 unpackS(vec4 t) { return t.rg; }
-              #endif
-            ` + NOISE_GLSL + `
-              float S(vec2 uv) { return unpackS(texture2D(uState, uv)).x; }
-              float C(vec2 uv) { return unpackS(texture2D(uState, uv)).y; }
-
-              // Twinkling motes: hash-grid sparks with a gentle wander.
-              float moteLayer(vec2 p, float t, float seed) {
-                vec2 g = floor(p);
-                vec2 f = fract(p);
-                float h = hash21(g * 1.37 + seed);
-                if (h < 0.80) return 0.0;
-                vec2 o = vec2(
-                  hash21(g + seed + 17.1),
-                  hash21(g + seed + 31.7)
-                ) * 0.8 + 0.1;
-                o += 0.16 * sin(t * (0.3 + h) + seed) * vec2(1.0, 0.8);
-                float tw = sin(t * (0.6 + h * 2.2) + h * 50.0) *
-                  0.5 + 0.5;
-                return smoothstep(0.10, 0.02, length(f - o)) *
-                  tw * (0.35 + 0.65 * h);
-              }
 
               void main() {
-                vec2 uv = vUv;
-                float d = S(uv);
-                float ch = C(uv);
-                vec2 ppx = uv * vec2(uAspect, 1.0);
-                vec2 pp = (uv - 0.5) * vec2(uAspect, 1.0);
+                // Detail chop: two scrolling noise octaves perturb the
+                // vertex normal, fading with distance to avoid shimmer.
+                float att = exp(-vDist * 0.010);
+                vec2 pp = vPos.xz;
+                vec2 dn;
+                dn.x = vnoise(pp * 1.35 + uTime * vec2(0.055, 0.031)) - 0.5;
+                dn.y = vnoise(pp * 1.35 + 7.31 - uTime * vec2(0.043, 0.058)) - 0.5;
+                vec2 dn2;
+                dn2.x = vnoise(pp * 3.7 - uTime * vec2(0.09, 0.06)) - 0.5;
+                dn2.y = vnoise(pp * 3.7 + 3.17 + uTime * vec2(0.07, 0.10)) - 0.5;
+                vec3 n = normalize(vNormal +
+                  vec3(dn.x, 0.0, dn.y) * 0.30 * att * uEnergy +
+                  vec3(dn2.x, 0.0, dn2.y) * 0.14 * att);
 
-                vec2 vel = flowVel(ppx, uTime);
+                vec3 V = normalize(cameraPosition - vPos);
+                float ndv = max(dot(n, V), 0.0);
 
-                // Laminar striations via the cycling flow-map trick.
-                float cyc1 = 5.0;
-                float t1 = mod(uTime, cyc1);
-                float t2 = mod(uTime + cyc1 * 0.5, cyc1);
-                float r1 = ridged((pp + 0.5) * 4.2 - vel * t1 * 6.0);
-                float r2 = ridged((pp + 0.5) * 4.2 - vel * t2 * 6.0);
-                float lam1 = mix(r1, r2, t1 / cyc1);
+                // Schlick fresnel (F0 of water ~ 0.02).
+                float fres = 0.02 + 0.98 * pow(1.0 - ndv, 5.0);
 
-                float cyc2 = 3.1;
-                float s1 = mod(uTime * 1.35, cyc2);
-                float s2 = mod(uTime * 1.35 + cyc2 * 0.5, cyc2);
-                float q1 = ridged((pp + 0.7) * 9.5 - vel * s1 * 11.0);
-                float q2 = ridged((pp + 0.7) * 9.5 - vel * s2 * 11.0);
-                float lam2 = mix(q1, q2, s1 / cyc2);
+                // Sky gradient by reflected-ray elevation.
+                vec3 R = reflect(-V, n);
+                float skyT = pow(clamp(R.y, 0.0, 1.0), 0.55);
+                vec3 skyCol = mix(uHorizon, uSky, skyT);
 
-                // Silk shading: treat dye density as a height field and
-                // light its gradient softly, so sheets read as fabric.
-                float dx = S(uv + vec2(uTexel.x, 0.0)) -
-                  S(uv - vec2(uTexel.x, 0.0));
-                float dy = S(uv + vec2(0.0, uTexel.y)) -
-                  S(uv - vec2(0.0, uTexel.y));
-                vec3 sn = normalize(vec3(-dx * 9.0, 1.0, -dy * 9.0));
-                float silk = pow(
-                  clamp(dot(sn, normalize(vec3(0.35, 0.62, 0.70))), 0.0, 1.0),
-                  1.6
-                );
+                // Water body: depth colour toward scatter tone on slopes,
+                // plus subsurface glow through thin crests facing the sun.
+                float slope = clamp(n.y, 0.0, 1.0);
+                vec3 body = mix(uMid, uDeep, smoothstep(0.86, 1.0, slope));
+                vec3 sunH = normalize(vec3(uSunDir.x, 0.0, uSunDir.z));
+                vec3 back = normalize(vec3(-R.x, 0.0, -R.z));
+                float sss = pow(clamp(vHeight / uEnergy * 0.5 + 0.5, 0.0, 1.0), 3.0) *
+                  clamp(dot(sunH, back), 0.0, 1.0);
+                body += uGlow * sss * 0.22;
 
-                // Atmosphere: faint storm-light pooled above centre.
-                float haze =
-                  exp(-length(pp * vec2(0.75, 1.15) - vec2(0.0, 0.30)) * 1.1);
+                vec3 col = mix(body, skyCol, fres);
 
-                // Compose: atmosphere, dye body, violet mid-tones.
-                vec3 col = mix(uVoid, uDeep, haze * 0.85);
-                col = mix(col, uDeep,
-                  smoothstep(0.05, 0.9, d) * 0.90);
-                col = mix(col, uMid,
-                  smoothstep(0.30, 1.05, d) * (0.55 + 0.45 * silk));
+                // Specular glints: tight lobe broken up by sparkle noise
+                // so the light path shimmers instead of smearing.
+                vec3 Hlf = normalize(uSunDir + V);
+                float spec = pow(max(dot(n, Hlf), 0.0), 240.0);
+                spec *= 0.65 + 0.7 * vnoise(pp * 2.6 + uTime * 0.35);
+                col += uSun * spec * (1.4 + uDark * 0.8);
 
-                // Plasma veins, dimmed where the silk light falls away.
-                float veins =
-                  lam1 * (0.18 + 0.82 * clamp(d * 1.5, 0.0, 1.0));
-                col = mix(col, uGlow, clamp(
-                  veins * (0.26 + ch * 0.60) * (0.55 + 0.45 * silk),
-                  0.0, 1.0));
+                // Crest foam: sparse, noise-broken, tinted toward glow.
+                float foamN = vnoise(pp * 1.1 + uTime * 0.12);
+                float foam = smoothstep(0.62, 0.98,
+                  vHeight / uEnergy + foamN * 0.35 - 0.18) * 0.32;
+                col = mix(col, mix(uCore, uGlow, 0.25), foam * att + foam * 0.35);
 
-                // White-hot sparks where fine filaments meet charge.
-                float sp = pow(lam2, 7.5) * clamp(ch * 1.35, 0.0, 1.0);
-                col = mix(col, uCore, sp);
+                // Exponential haze into the horizon, then the page void —
+                // the sea dissolves seamlessly into the site background.
+                float fog = 1.0 - exp(-pow(vDist * 0.0062, 1.6));
+                col = mix(col, uHorizon, clamp(fog, 0.0, 1.0));
+                col = mix(col, uVoid, smoothstep(0.55, 1.0, fog));
 
-                // Fake bloom: thresholded multi-tap of the state field.
-                float bloom = 0.0;
-                for (int i = 0; i < 8; i++) {
-                  float an = float(i) * 0.785398;
-                  vec2 off = vec2(cos(an), sin(an)) * uTexel * 5.0;
-                  vec2 bs = unpackS(texture2D(uState, uv + off));
-                  bloom += max(bs.y - 0.22, 0.0) +
-                    max(bs.x - 0.38, 0.0) * 0.6;
-                }
-                bloom *= 0.125;
-                col += mix(uMid, uGlow, clamp(ch * 1.2, 0.0, 1.0)) *
-                  bloom * (0.9 + silk * 0.6);
-
-                // Motes: dust drifting in the lit regions.
-                float motes = moteLayer((pp + 0.5) * 16.0, uTime, 7.0) *
-                  0.50 +
-                  moteLayer((pp + 0.5) * 27.0 + 13.7, uTime * 1.3, 41.0) *
-                  0.32;
-                motes *= 0.15 + 0.85 * clamp(d + ch * 0.8, 0.0, 1.0);
-                col = mix(col, uGlow, clamp(motes, 0.0, 1.0) * 0.55);
-
-                // Lightning: main channel plus an optional fork, drawn as
-                // Gaussian core/halo with corona shimmer and stutter.
-                if (uBoltCount > 1) {
-                  float env =
-                    smoothstep(0.0, 0.045, uBoltAge) *
-                    (1.0 -
-                      smoothstep(uBoltDur * 0.55, uBoltDur, uBoltAge));
-                  env *= 0.78 +
-                    0.85 * pow(hash11(floor(uTime * 43.0)), 2.0);
-                  env *= 0.80 + 0.20 *
-                    sin(uBoltAge * 95.0) * sin(uBoltAge * 41.0 + 1.7);
-
-                  float best = 1e3;
-                  float pw = 1.0;
-                  for (int i = 0; i < 15; i++) {
-                    if (i >= uBoltCount - 1) break;
-                    vec2 a = uBoltPts[i].xy * vec2(uAspect, 1.0);
-                    vec2 b = uBoltPts[i + 1].xy * vec2(uAspect, 1.0);
-                    float dd = segDist(ppx, a, b);
-                    if (dd < best) {
-                      best = dd;
-                      pw = 0.5 *
-                        (uBoltPts[i].w + uBoltPts[i + 1].w);
-                    }
-                  }
-                  float cw = 0.006 * (0.7 + pw);
-                  float core =
-                    exp(-(best * best) / (2.0 * cw * cw));
-                  float halo = exp(-(best * best) / 0.005);
-                  col = mix(col, uBoltCol,
-                    clamp(core * env * (0.6 + pw), 0.0, 1.0));
-                  col = mix(col, uGlow,
-                    clamp(halo * env * 0.32 * (0.4 + pw), 0.0, 1.0));
-
-                  // Corona: wide ionised shimmer hugging the channel.
-                  float cor = exp(-(best * best) / 0.02) *
-                    (0.5 + 0.5 *
-                      vnoise(vec2(best * 220.0, uTime * 2.5)));
-                  col = mix(col, uGlow,
-                    clamp(cor * env * 0.10, 0.0, 1.0));
-
-                  if (uBranchCount > 1) {
-                    float bBest = 1e3;
-                    float bPw = 1.0;
-                    for (int j = 0; j < 7; j++) {
-                      if (j >= uBranchCount - 1) break;
-                      vec2 a = uBranchPts[j].xy * vec2(uAspect, 1.0);
-                      vec2 b = uBranchPts[j + 1].xy *
-                        vec2(uAspect, 1.0);
-                      float dd = segDist(ppx, a, b);
-                      if (dd < bBest) {
-                        bBest = dd;
-                        bPw = 0.5 * (uBranchPts[j].w +
-                          uBranchPts[j + 1].w);
-                      }
-                    }
-                    float bcw = 0.0045 * (0.7 + bPw);
-                    float bcore =
-                      exp(-(bBest * bBest) / (2.0 * bcw * bcw));
-                    col = mix(col, uBoltCol,
-                      clamp(bcore * env * bPw * 0.8, 0.0, 1.0));
-                  }
-                }
-
-                // Scene flash, kept soft.
-                col += (uCore - uVoid) * uFlash * 0.07;
-
-                // Filmic exposure in dark mode only (paper stays paper).
+                // Gentle filmic exposure at night only.
                 col = max(col, vec3(0.0));
-                col = mix(col, 1.0 - exp(-col * 1.45), uDark);
+                col = mix(col, 1.0 - exp(-col * 1.35), uDark * 0.85);
 
-                // Film grain.
-                col += (hash21(gl_FragCoord.xy + fract(uTime) * 61.7) - 0.5) *
-                  0.03;
-
-                // Soft vignette lets the page background breathe at edges.
-                float rr = length((uv - 0.5) * vec2(uAspect, 1.0));
-                float a = 0.30 + 0.70 * smoothstep(1.05, 0.40, rr);
-                gl_FragColor = vec4(col * a, a); // premultiplied alpha
+                gl_FragColor = vec4(col, 1.0);
               }
             `;
 
-            // Storage: half-float is filterable in core WebGL2 and
-            // renderable with either colour-buffer extension; otherwise
-            // fall back to byte packing (quantised but functional).
-            const glctx = renderer.getContext();
-            const renderable =
-              glctx.getExtension("EXT_color_buffer_half_float") ||
-              glctx.getExtension("EXT_color_buffer_float");
-            const byteMode = !renderable;
-            const storeType = renderable
-              ? THREE.HalfFloatType
-              : THREE.UnsignedByteType;
-            const defines = byteMode ? { BYTE_STATE: "" } : {};
-
-            const drops = Array.from({ length: 16 }, () => new THREE.Vector4());
-            const branch = Array.from({ length: 8 }, () => new THREE.Vector4());
-            const uTimeS = { value: 0 };
-            const uAspectS = { value: 1 };
-            const uTexelS = { value: new THREE.Vector2() };
-            const uStateS = { value: null };
-            const uBoltU = { value: drops };
-            const uBoltNU = { value: 0 };
-            const uBranchU = { value: branch };
-            const uBranchNU = { value: 0 };
-
-            const simUniforms = {
-              uState: uStateS,
-              uTexel: uTexelS,
-              uTime: uTimeS,
-              uAspect: uAspectS,
-              uDt: { value: 1 / 60 },
-              uPointer: { value: new THREE.Vector4(0.5, 0.5, 0, 0.02) },
-              uEmitterA: { value: new THREE.Vector4(0.32, 0.42, 0.125, 0) },
-              uEmitterB: { value: new THREE.Vector4(0.68, 0.62, 0.095, 0) },
-              uBoltPts: uBoltU,
-              uBoltCount: uBoltNU,
-            };
-            const dispUniforms = {
-              uState: uStateS,
-              uTexel: uTexelS,
-              uTime: uTimeS,
-              uAspect: uAspectS,
-              uScroll: { value: 0 },
-              uFlash: { value: 0 },
-              uDark: { value: root.dataset.theme === "light" ? 0 : 1 },
-              uBoltAge: { value: 0 },
-              uBoltDur: { value: 1 },
-              uBoltPts: uBoltU,
-              uBoltCount: uBoltNU,
-              uBranchPts: uBranchU,
-              uBranchCount: uBranchNU,
-              uVoid: { value: pal.void },
-              uDeep: { value: pal.deep },
-              uMid: { value: pal.mid },
-              uGlow: { value: pal.glow },
-              uCore: { value: pal.core },
-              uBoltCol: { value: pal.bolt },
-            };
-
-            const simMat = new THREE.ShaderMaterial({
-              defines,
-              uniforms: simUniforms,
-              vertexShader: VERT,
-              fragmentShader: SIM_FRAG,
-              depthTest: false,
-              depthWrite: false,
-              blending: THREE.NoBlending,
-            });
-            const dispMat = new THREE.ShaderMaterial({
-              defines,
-              uniforms: dispUniforms,
-              vertexShader: VERT,
-              fragmentShader: DISP_FRAG,
-              depthTest: false,
-              depthWrite: false,
-              transparent: true,
-              premultipliedAlpha: true,
+            const waterMat = new THREE.ShaderMaterial({
+              uniforms,
+              vertexShader: WATER_VERT,
+              fragmentShader: WATER_FRAG,
             });
 
-            const geo = new THREE.PlaneGeometry(2, 2);
-            const cam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-            const simScene = new THREE.Scene();
-            const dispScene = new THREE.Scene();
-            const simMesh = new THREE.Mesh(geo, simMat);
-            const dispMesh = new THREE.Mesh(geo, dispMat);
-            simMesh.frustumCulled = false;
-            dispMesh.frustumCulled = false;
-            simScene.add(simMesh);
-            dispScene.add(dispMesh);
+            const geo = new THREE.PlaneGeometry(320, 230, 210, 150);
+            geo.rotateX(-Math.PI / 2);
+            geo.translate(0, 0, -62);
+            const water = new THREE.Mesh(geo, waterMat);
+            scene.add(water);
 
-            let rtA = null;
-            let rtB = null;
-            let SW = 0;
-            let SH = 0;
-
-            const makeTargets = () => {
-              rtA?.dispose();
-              rtB?.dispose();
-              const opts = {
-                type: storeType,
-                format: THREE.RGBAFormat,
-                minFilter: THREE.LinearFilter,
-                magFilter: THREE.LinearFilter,
-                wrapS: THREE.ClampToEdgeWrapping,
-                wrapT: THREE.ClampToEdgeWrapping,
-                depthBuffer: false,
-                stencilBuffer: false,
-              };
-              rtA = new THREE.WebGLRenderTarget(SW, SH, opts);
-              rtB = new THREE.WebGLRenderTarget(SW, SH, opts);
-              uStateS.value = rtA.texture;
-              // Neutral state: byte mode packs (d,ch)=(0,0) as (0.5,0.5).
-              renderer.setClearColor(byteMode ? 0x808080 : 0x000000, 0);
-              renderer.setRenderTarget(rtA);
-              renderer.clear();
-              renderer.setRenderTarget(rtB);
-              renderer.clear();
-              renderer.setRenderTarget(null);
-              renderer.setClearColor(0x000000, 0);
-            };
-
-            // ---- simulation plumbing -----------------------------------
-            let simTime = 0;
-
-            const updateEmitters = () => {
-              const t = simTime;
-              simUniforms.uEmitterA.value.set(
-                0.5 + 0.30 * Math.cos(t * 0.19),
-                0.5 + 0.26 * Math.sin(t * 0.147),
-                0.125,
-                0,
-              );
-              simUniforms.uEmitterB.value.set(
-                0.5 + 0.32 * Math.cos(t * 0.113 + Math.PI),
-                0.5 + 0.24 * Math.sin(t * 0.173 + Math.PI),
-                0.095,
-                0,
-              );
-            };
-
-            const advect = () => {
-              renderer.setRenderTarget(rtB);
-              renderer.render(simScene, cam);
-              uStateS.value = rtB.texture;
-              const t = rtA;
-              rtA = rtB;
-              rtB = t;
-            };
-
-            const warmup = (n) => {
-              simTime = 4.0;
-              updateEmitters();
-              for (let i = 0; i < n; i++) {
-                simTime += 1 / 60;
-                updateEmitters();
-                advect();
-              }
-            };
-
-            // ---- lightning ----------------------------------------------
-            // Midpoint displacement between two anchors; four refinement
-            // passes give the classic jagged leader shape.
-            const makeBoltPath = (ax, ay, bx, by) => {
-              let pts = [[ax, ay], [bx, by]];
-              for (let pass = 0; pass < 4; pass++) {
-                const out = [pts[0]];
-                for (let i = 1; i < pts.length; i++) {
-                  const a = pts[i - 1];
-                  const b = pts[i];
-                  const dx = b[0] - a[0];
-                  const dy = b[1] - a[1];
-                  const len = Math.hypot(dx, dy) || 1e-5;
-                  const nx = -dy / len;
-                  const ny = dx / len;
-                  const amp = (Math.random() - 0.5) * len * 0.55;
-                  out.push(
-                    [(a[0] + b[0]) / 2 + nx * amp,
-                     (a[1] + b[1]) / 2 + ny * amp],
-                    b,
-                  );
+            // Sky dome: gradient by elevation with a soft bloom around
+            // the light, so the horizon reads as atmosphere.
+            const skyMat = new THREE.ShaderMaterial({
+              uniforms,
+              vertexShader: `
+                varying vec3 vDir;
+                void main() {
+                  vDir = position;
+                  gl_Position = projectionMatrix * modelViewMatrix *
+                    vec4(position, 1.0);
                 }
-                pts = out;
-              }
-              return pts;
-            };
-
-            const uFlashU = dispUniforms.uFlash;
-            const uDarkU = dispUniforms.uDark;
-            let flash = 0;
-            const boltState =
-              { start: 0, dur: 1, restrike: false, restrikeAt: 0 };
-
-            const spawnBolt = (ax, ay, bx, by, opt = {}) => {
-              const power = opt.power ?? 1;
-              const width = opt.width ?? 0.011;
-
-              // Main channel, padded so unused segments are degenerate.
-              const main = makeBoltPath(ax, ay, bx, by).slice(0, 16);
-              const n = main.length;
-              for (let i = 0; i < 16; i++) {
-                const p = main[Math.min(i, n - 1)];
-                const tt = Math.min(i, n - 1) / (n - 1);
-                const taper = Math.sin(Math.PI * tt) * 0.75 + 0.45;
-                drops[i].set(p[0], p[1], width * taper, power * taper);
-              }
-              uBoltNU.value = 16;
-
-              // A fork leaves partway down the channel, most strikes.
-              if (!opt.micro && Math.random() < 0.85) {
-                const bi = Math.floor(4 + Math.random() *
-                  Math.max(1, n - 7));
-                const [px, py] = main[Math.min(bi, n - 2)];
-                const ang =
-                  Math.atan2(by - ay, bx - ax) +
-                  (Math.random() < 0.5 ? -1 : 1) *
-                    (0.55 + Math.random() * 0.7);
-                const bl = 0.08 + Math.random() * 0.16;
-                const br = makeBoltPath(
-                  px,
-                  py,
-                  px + Math.cos(ang) * bl,
-                  py + Math.sin(ang) * bl * 0.45 -
-                    0.04 - Math.random() * 0.08,
-                ).slice(0, 8);
-                const bn = br.length;
-                for (let j = 0; j < 8; j++) {
-                  const q = br[Math.min(j, bn - 1)];
-                  const tt = Math.min(j, bn - 1) / (bn - 1);
-                  const taper =
-                    (Math.sin(Math.PI * tt) * 0.75 + 0.45) *
-                    (1 - tt * 0.35);
-                  branch[j].set(
-                    q[0],
-                    q[1],
-                    width * 0.7 * taper,
-                    power * 0.6 * taper,
-                  );
+              `,
+              fragmentShader: `
+                precision highp float;
+                uniform vec3 uSky;
+                uniform vec3 uHorizon;
+                uniform vec3 uVoid;
+                uniform vec3 uSun;
+                uniform vec3 uSunDir;
+                varying vec3 vDir;
+                void main() {
+                  vec3 d = normalize(vDir);
+                  vec3 col = mix(uHorizon, uSky,
+                    pow(clamp(d.y, 0.0, 1.0), 0.5));
+                  col = mix(uVoid, col, smoothstep(-0.18, 0.02, d.y));
+                  float g =
+                    pow(max(dot(d, uSunDir), 0.0), 160.0) * 1.5 +
+                    pow(max(dot(d, uSunDir), 0.0), 9.0) * 0.13;
+                  col += uSun * g * smoothstep(-0.05, 0.15, d.y);
+                  gl_FragColor = vec4(col, 1.0);
                 }
-                uBranchNU.value = 8;
-              } else {
-                uBranchNU.value = 0;
-              }
-
-              boltState.start = simTime;
-              boltState.dur = opt.dur ?? 0.16 + Math.random() * 0.12;
-              boltState.restrike =
-                !opt.micro && Math.random() < 0.6;
-              boltState.restrikeAt =
-                boltState.start + 0.07 + Math.random() * 0.05;
-              dispUniforms.uBoltAge.value = 0;
-              dispUniforms.uBoltDur.value = boltState.dur;
-              flash = Math.min(1, flash + power * (opt.micro ? 0.3 : 0.85));
-            };
-
-            let nextStrike = reduced ? Infinity : 3.4;
+              `,
+              side: THREE.BackSide,
+              depthWrite: false,
+            });
+            const sky = new THREE.Mesh(
+              new THREE.SphereGeometry(430, 32, 16),
+              skyMat,
+            );
+            sky.renderOrder = -1;
+            scene.add(sky);
 
             // ---- interaction --------------------------------------------
-            const ndcLast = new THREE.Vector2(0.5, 0.5);
-            let energy = 0;
-            let movedAcc = 0;
-            let lastMicro = -10;
+            // Raycast pointer events onto the sea plane.
+            const seaPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+            const raycaster = new THREE.Raycaster();
+            const ndc = new THREE.Vector2(0, 0);
+            const hit = new THREE.Vector3();
+            const wakePos = new THREE.Vector2(0, -6);
+            let wakeStrength = 0;
+            let hasHit = false;
+
+            const toSea = (clientX, clientY) => {
+              ndc.set(
+                (clientX / innerWidth) * 2 - 1,
+                -(clientY / innerHeight) * 2 + 1,
+              );
+              raycaster.setFromCamera(ndc, camera);
+              return raycaster.ray.intersectPlane(seaPlane, hit);
+            };
 
             addEventListener("pointermove", (e) => {
-              const x = e.clientX / innerWidth;
-              const y = 1 - e.clientY / innerHeight;
-              const dx = x - ndcLast.x;
-              const dy = y - ndcLast.y;
-              const sp = Math.hypot(dx, dy);
-              energy = Math.min(1, energy + sp * 3.2);
-              movedAcc += sp;
-              simUniforms.uPointer.value.set(
-                x,
-                y,
-                Math.min(0.10 + energy * 0.75, 0.85),
-                0.012 + sp * 1.5,
-              );
-              ndcLast.set(x, y);
-
-              // Fast flicks snap micro-arcs off the cursor.
-              if (
-                !reduced &&
-                movedAcc > 0.34 &&
-                simTime - lastMicro > 0.55
-              ) {
-                movedAcc = 0;
-                lastMicro = simTime;
-                const ang = Math.atan2(dy, dx) +
-                  (Math.random() - 0.5) * 1.6;
-                const ln = 0.10 + Math.random() * 0.12;
-                spawnBolt(x, y, x + Math.cos(ang) * ln,
-                  y + Math.sin(ang) * ln,
-                  { micro: true, power: 0.5, width: 0.008, dur: 0.11 });
+              if (toSea(e.clientX, e.clientY)) {
+                wakePos.set(hit.x, hit.z);
+                wakeStrength = Math.min(wakeStrength + 0.09, 0.34);
+                hasHit = true;
               }
             }, { passive: true });
 
+            // Presses splash a wavelet packet at the contact point; UI
+            // controls splash harder.
+            let rippleIdx = 0;
+            const splash = (x, z, amp) => {
+              const r = uniforms.uRipples.value[rippleIdx];
+              r.set(x, z, 0, amp);
+              rippleIdx = (rippleIdx + 1) % 8;
+              wakeStrength = Math.min(wakeStrength + 0.12, 0.4);
+            };
             addEventListener("pointerdown", (e) => {
-              energy = 1;
-              const x = e.clientX / innerWidth;
-              const y = 1 - e.clientY / innerHeight;
-              simUniforms.uPointer.value.set(x, y, 1.3, 0.03);
-              if (!reduced) {
-                const ang = Math.PI / 2 + (Math.random() - 0.5) * 2.4;
-                const ln = 0.18 + Math.random() * 0.14;
-                spawnBolt(x, y, x + Math.cos(ang) * ln,
-                  y - Math.sin(ang) * ln,
-                  { power: 0.8, width: 0.010, dur: 0.13 });
-              }
+              if (!reduced && toSea(e.clientX, e.clientY))
+                splash(hit.x, hit.z, 0.24);
             }, { passive: true });
+            addEventListener("click", (e) => {
+              if (
+                reduced ||
+                !e.target.closest(
+                  ".carousel-arrow,.clip-filter-btn,.btn,.clip-play",
+                )
+              )
+                return;
+              if (toSea(e.clientX, e.clientY)) splash(hit.x, hit.z, 0.42);
+            }, { passive: true });
+
+            // Scroll raises the viewpoint and roughens the swell.
+            let lastY = scrollY;
+            let energyTarget = 1;
 
             // ---- sizing -------------------------------------------------
             let resizeTimer = 0;
@@ -3227,20 +2883,11 @@
               const w = Math.max(320, innerWidth);
               const h = Math.max(240, innerHeight);
               renderer.setSize(w, h);
-              uAspectS.value = w / h;
-              dispUniforms.uScroll.value = scrollY;
-              const sw = Math.round(Math.min(560, Math.max(200, w * 0.5)));
-              const sh = Math.round(Math.min(560, Math.max(200, h * 0.5)));
-              if (sw !== SW || sh !== SH) {
-                SW = sw;
-                SH = sh;
-                uTexelS.value.set(1 / SW, 1 / SH);
-                makeTargets();
-                warmup(reduced ? 170 : 90);
-              }
+              camera.aspect = w / h;
+              camera.updateProjectionMatrix();
             };
 
-            // ---- theme sync ---------------------------------------------
+            // ---- theme + section sync -----------------------------------
             let themeHex =
               PALETTES[root.dataset.theme === "light" ? "light" : "dark"];
             let darkTarget = root.dataset.theme === "light" ? 0 : 1;
@@ -3251,6 +2898,31 @@
               if (reduced) renderStill();
             }).observe(root, { attributes: true, attributeFilter: ["data-theme"] });
 
+            // Section focus re-tints the water: work runs brighter
+            // currents, clips sink darker, contact warms toward the CTA.
+            const MOODS = {
+              top: { deep: 1.00, mid: 1.00, glow: 1.00 },
+              about: { deep: 1.14, mid: 1.06, glow: 0.94 },
+              work: { deep: 1.00, mid: 1.02, glow: 1.22 },
+              clips: { deep: 0.84, mid: 0.92, glow: 1.05 },
+              contact: { deep: 1.10, mid: 1.20, glow: 1.12 },
+            };
+            let activeSection = "top";
+            if (!reduced && "IntersectionObserver" in window) {
+              const secObs = new IntersectionObserver((ents) => {
+                ents.forEach((en) => {
+                  if (en.isIntersecting) {
+                    const id = en.target.id || "top";
+                    if (MOODS[id]) activeSection = id;
+                  }
+                });
+              }, { threshold: 0.35 });
+              ["top", "about", "work", "clips", "contact"].forEach((id) => {
+                const el = document.getElementById(id);
+                if (el) secObs.observe(el);
+              });
+            }
+
             // ---- main loop ----------------------------------------------
             let visible = !document.hidden;
             document.addEventListener("visibilitychange", () => {
@@ -3259,18 +2931,27 @@
 
             const renderStill = () => {
               for (const key of Object.keys(pal)) pal[key].set(themeHex[key]);
-              uDarkU.value = darkTarget;
-              dispUniforms.uScroll.value = scrollY;
-              renderer.setRenderTarget(null);
-              renderer.render(dispScene, cam);
+              uniforms.uDark.value = darkTarget;
+              uniforms.uTime.value = 8.0;
+              camera.position.set(CAM.x, CAM.y + 1.2, CAM.z);
+              camera.lookAt(0, 1.0, -40);
+              renderer.setClearColor(pal.void);
+              renderer.render(scene, camera);
             };
 
             configure();
 
             if (reduced) {
-              // One composed still: grown sheets plus a frozen strike.
-              spawnBolt(0.28, 1.04, 0.64, 0.30, { dur: 1 });
-              dispUniforms.uBoltAge.value = 0.05;
+              // One composed still frame: mid-swell with fading ripples.
+              for (let i = 0; i < 4; i++) {
+                const r = uniforms.uRipples.value[i];
+                r.set(
+                  -14 + i * 9,
+                  -26 - (i % 2) * 12,
+                  0.6 + i * 0.5,
+                  0.3,
+                );
+              }
               renderStill();
               canvas.classList.add("on");
               addEventListener("resize", () => {
@@ -3290,52 +2971,62 @@
 
             const clock = new THREE.Clock();
             const tmpColor = new THREE.Color();
+            const moodColor = new THREE.Color();
+            let camX = CAM.x;
+            let camY = CAM.y;
             let started = false;
 
             renderer.setAnimationLoop(() => {
               if (!visible) return;
               const dt = Math.min(clock.getDelta(), 0.05);
-              simTime += dt;
-              uTimeS.value = simTime;
-              simUniforms.uDt.value = dt;
+              const t = clock.elapsedTime;
+              uniforms.uTime.value = t;
 
-              energy *= Math.exp(-dt * 3.2);
-              updateEmitters();
+              // Wake strength relaxes back to still water.
+              wakeStrength *= Math.exp(-dt * 2.4);
+              uniforms.uWake.value.set(
+                wakePos.x,
+                wakePos.y,
+                wakeStrength,
+                1.7,
+              );
 
-              // Strike scheduling with stochastic restrikes.
-              uBoltNU.value > 0 && (dispUniforms.uBoltAge.value =
-                simTime - boltState.start);
-              if (
-                boltState.restrike &&
-                simTime >= boltState.restrikeAt
-              ) {
-                boltState.restrike = false;
-                flash = Math.max(flash, 0.65);
-                boltState.start = simTime;
-                dispUniforms.uBoltAge.value = 0;
+              // Ripple ages advance; expired packets sleep.
+              for (const r of uniforms.uRipples.value) {
+                if (r.z >= 0) r.z += dt;
               }
-              if (uBoltNU.value > 0 && simTime > boltState.start + boltState.dur + 0.06)
-                uBoltNU.value = 0;
-              if (simTime >= nextStrike) {
-                const ax = 0.15 + Math.random() * 0.7;
-                const bx = ax + (Math.random() - 0.5) * 0.5;
-                spawnBolt(ax, 1.04, bx, 0.25 + Math.random() * 0.4);
-                nextStrike = simTime + 4.2 + Math.random() * 5.0;
+
+              // Scroll: swell energy and a slow rise of the viewpoint.
+              const y = scrollY;
+              const vy = Math.abs(y - lastY) / Math.max(dt, 1e-3);
+              lastY = y;
+              energyTarget +=
+                (Math.min(1 + vy * 0.00045, 1.35) - energyTarget) *
+                (1 - Math.exp(-dt * 3));
+              uniforms.uEnergy.value +=
+                (energyTarget - uniforms.uEnergy.value) *
+                (1 - Math.exp(-dt * 4));
+              const targetCamY =
+                CAM.y + Math.min(y * 0.0012, 2.4);
+
+              // Camera drifts gently with the pointer over the sea.
+              const k = 1 - Math.exp(-dt * 2.2);
+              camX += (ndc.x * 1.5 - camX) * k;
+              camY += (targetCamY - camY) * k;
+              camera.position.set(camX, camY, CAM.z);
+              camera.lookAt(camX * 0.5, 1.0, -40);
+
+              // Ease palette toward theme x section mood.
+              const mood = MOODS[activeSection] || MOODS.top;
+              const kc = 1 - Math.exp(-dt * 2.2);
+              for (const key of ["deep", "mid", "glow"]) {
+                moodColor.set(themeHex[key]).multiplyScalar(mood[key] ?? 1);
+                pal[key].lerp(moodColor, kc);
               }
-              flash *= Math.exp(-dt * 7.5);
-              uFlashU.value = flash;
+              uniforms.uDark.value += (darkTarget - uniforms.uDark.value) * kc;
 
-              // Ease the palette toward the active theme.
-              const k = 1 - Math.exp(-dt * 4.5);
-              for (const key of Object.keys(pal))
-                pal[key].lerp(tmpColor.set(themeHex[key]), k);
-              uDarkU.value += (darkTarget - uDarkU.value) * k;
-
-              advect();
-
-              dispUniforms.uScroll.value = scrollY;
-              renderer.setRenderTarget(null);
-              renderer.render(dispScene, cam);
+              renderer.setClearColor(pal.void);
+              renderer.render(scene, camera);
 
               if (!started) {
                 started = true;
